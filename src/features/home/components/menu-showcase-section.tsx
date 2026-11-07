@@ -169,9 +169,13 @@ export function MenuShowcaseSection({ menus }: MenuShowcaseSectionProps) {
 
               {/* Controls */}
               {bestSellers.length > 1 && (
-                <div className="mt-10 flex items-center justify-between border-t border-border pt-5">
-                  <div className="flex items-center gap-2" aria-label="Pilih menu Best Seller">
-                    {bestSellers.map((menu, index) => {
+                <div className="mt-8 flex flex-col gap-5 border-t border-border pt-5 sm:mt-10 sm:flex-row sm:items-center sm:justify-between">
+                  {/* Indikator: tampilkan maksimal 7 */}
+                  <div
+                    className="flex min-w-0 items-center gap-1.5 overflow-hidden"
+                    aria-label="Pilih menu Best Seller"
+                  >
+                    {bestSellers.slice(0, 7).map((menu, index) => {
                       const menuKey = menu.id ?? menu.slug ?? menu.name;
 
                       return (
@@ -181,38 +185,50 @@ export function MenuShowcaseSection({ menus }: MenuShowcaseSectionProps) {
                           onClick={() => setActiveIndex(index)}
                           aria-label={`Tampilkan ${menu.name}`}
                           aria-current={index === safeIndex ? "true" : undefined}
-                          className="group p-1"
+                          className="shrink-0 p-1"
                         >
                           <span
                             className={`block h-1 rounded-full transition-all duration-500 ${
-                              index === safeIndex
-                                ? "w-8 bg-foreground"
-                                : "w-3 bg-border group-hover:bg-muted-foreground"
+                              index === safeIndex ? "w-7 bg-foreground" : "w-2.5 bg-border"
                             }`}
                           />
                         </button>
                       );
                     })}
+
+                    {bestSellers.length > 7 && (
+                      <span className="ml-1 whitespace-nowrap text-xs text-muted-foreground">
+                        +{bestSellers.length - 7}
+                      </span>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={goToPrevious}
-                      aria-label="Menu sebelumnya"
-                      className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:bg-muted"
-                    >
-                      <ArrowLeft className="size-4" />
-                    </button>
+                  {/* Tombol navigasi */}
+                  <div className="flex shrink-0 items-center justify-between gap-3 sm:justify-end">
+                    <span className="text-xs tabular-nums text-muted-foreground">
+                      {String(safeIndex + 1).padStart(2, "0")} /{" "}
+                      {String(bestSellers.length).padStart(2, "0")}
+                    </span>
 
-                    <button
-                      type="button"
-                      onClick={goToNext}
-                      aria-label="Menu berikutnya"
-                      className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:bg-muted"
-                    >
-                      <ArrowRight className="size-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={goToPrevious}
+                        aria-label="Menu sebelumnya"
+                        className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:bg-muted"
+                      >
+                        <ArrowLeft className="size-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={goToNext}
+                        aria-label="Menu berikutnya"
+                        className="flex size-10 items-center justify-center rounded-full border border-border transition-colors hover:bg-muted"
+                      >
+                        <ArrowRight className="size-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
