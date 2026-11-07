@@ -895,6 +895,69 @@ html.super-admin-theme::-webkit-scrollbar-corner {
   }
 }
 
+
+/* =========================================
+   BRANCH PAGE SCROLLBAR THEMES, detail menu
+   ========================================= */
+
+/* Cabang 1 — Modern Futuristic */
+html.modern-theme {
+  scrollbar-color: #C5F467 #30362E;
+  scrollbar-width: thin;
+}
+
+html.modern-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.modern-theme::-webkit-scrollbar-track {
+  background: #30362E;
+}
+
+html.modern-theme::-webkit-scrollbar-thumb {
+  background: #C5F467;
+  border-radius: 9999px;
+}
+
+/* Cabang 2 — Traditional Heritage */
+html.heritage-theme {
+  scrollbar-color: #9D482C #D9C6A8;
+  scrollbar-width: thin;
+}
+
+html.heritage-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.heritage-theme::-webkit-scrollbar-track {
+  background: #D9C6A8;
+}
+
+html.heritage-theme::-webkit-scrollbar-thumb {
+  background: #9D482C;
+  border-radius: 9999px;
+}
+
+/* Cabang 4 — Contemporary Cozy */
+html.cozy-theme {
+  scrollbar-color: #C17B52 #DED6C9;
+  scrollbar-width: thin;
+}
+
+html.cozy-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.cozy-theme::-webkit-scrollbar-track {
+  background: #DED6C9;
+}
+
+html.cozy-theme::-webkit-scrollbar-thumb {
+  background: #C17B52;
+  border-radius: 9999px;
+}
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
