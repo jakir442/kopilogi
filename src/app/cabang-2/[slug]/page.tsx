@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { PublicMenuDetail } from "@/features/menu/components/public-menu-detail";
 import { getPublicMenuByBranchAndSlug } from "@/features/menu/queries/public-menu.queries";
+import { getApprovedReviewsByMenu } from "@/features/menu/queries/public-menu-review.queries";
 
 type PageProps = {
   params: Promise<{
@@ -40,5 +41,7 @@ export default async function Cabang2MenuDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <PublicMenuDetail data={data} />;
+  const reviews = await getApprovedReviewsByMenu(data.menu.id);
+
+  return <PublicMenuDetail data={data} reviews={reviews} />;
 }
