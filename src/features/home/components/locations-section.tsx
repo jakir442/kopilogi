@@ -1,177 +1,146 @@
-import { ArrowUpRight, CheckCircle2, Clock3, MapPin } from "lucide-react";
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { motion } from "motion/react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
-import { SectionHeading } from "@/components/shared/section-heading";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 const locations = [
   {
+    number: "01",
     name: "Kopilogi Cikuray",
-    branch: "Cabang 01",
     city: "Garut, Jawa Barat",
-    address: "Jl. Cikuray No.42, Regol, Kec. Garut Kota, Kabupaten Garut, Jawa Barat 44114",
     concept: "Modern Futuristic",
-    description:
-      "Perpaduan desain modern dan nuansa futuristik untuk menikmati kopi, makanan, atau menghabiskan waktu bersama.",
-    status: "active",
-    mapUrl: "https://www.google.com/maps/search/?api=1&query=Kopilogi+Cikuray+Garut",
-    featured: true,
+    image: "/gambar/tempat/kopilogi-cikuray.jpg",
+    href: "/cabang-1",
   },
   {
+    number: "02",
     name: "Waroeng Kopilogi",
-    branch: "Cabang 02",
     city: "Garut, Jawa Barat",
-    address: "Jl. Guntur No.14, Paminggir, Kec. Garut Kota, Kabupaten Garut, Jawa Barat 44118",
     concept: "Traditional Heritage",
-    description:
-      "Karakter tradisional dengan suasana hangat yang menghadirkan pengalaman berbeda dari cabang Kopilogi lainnya.",
-    status: "active",
-    mapUrl: "https://www.google.com/maps/search/?api=1&query=Waroeng+Kopilogi+Jl+Guntur+Garut",
-    featured: false,
+    image: "/gambar/tempat/waroeng-kopilogi.png",
+    href: "/cabang-2",
   },
   {
+    number: "04",
     name: "Kopilogi Tasik",
-    branch: "Cabang 04",
     city: "Tasikmalaya, Jawa Barat",
-    address: "Jl. Dr. Sukarjo No. 34, Tawangsari, Kec. Tawang, Kota Tasikmalaya, Jawa Barat 46112.",
-    concept: "Cozy & Relaxed",
-    description:
-      "Suasana nyaman untuk menikmati sajian Kopilogi, berbincang santai, dan meluangkan waktu bersama.",
-    status: "active",
-    mapUrl: "https://www.google.com/maps/search/?api=1&query=Kopilogi+Tasikmalaya",
-    featured: false,
+    concept: "Contemporary Cozy",
+    image: "/gambar/tempat/kopilogi-tasik.png",
+    href: "/cabang-4",
   },
 ];
 
 export function LocationsSection() {
   return (
-    <section id='locations' className='border-t border-border/60 bg-background'>
-      <Container className='py-20 sm:py-28'>
-        <div className='flex flex-col gap-8 md:flex-row md:items-end md:justify-between'>
+    <section id="locations" className="bg-background py-20 md:py-28 lg:py-32">
+      <Container>
+        {/* Section heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="mb-10 flex flex-col justify-between gap-5 md:mb-14 md:flex-row md:items-end"
+        >
           <SectionHeading
-            label='Lokasi Kopilogi'
-            title='Temukan tempat untuk cerita berikutnya.'
-            description='Setiap cabang memiliki karakter dan suasana tersendiri. Pilih lokasi yang sesuai dengan perjalanan dan momen yang ingin kamu nikmati.'
+            eyebrow="Find Your Kopilogi"
+            title="Satu nama, tiga suasana."
+            description="Pilih tempat yang cocok untuk cerita berikutnya."
           />
 
-          <div className='flex shrink-0 items-center gap-2 self-start rounded-full border border-border bg-muted/40 px-3.5 py-2 md:mb-1'>
-            <CheckCircle2 className='size-4 text-foreground' aria-hidden='true' />
-            <span className='text-xs font-medium text-muted-foreground'>3 lokasi aktif</span>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <MapPin className="size-4" />
+            <span>Garut & Tasikmalaya</span>
           </div>
-        </div>
+        </motion.div>
 
-        <div className='mt-12 grid gap-5 lg:grid-cols-3'>
-          {locations.map((location) => (
-            <article
-              key={location.name}
-              className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/[0.04] sm:p-7 ${
-                location.featured ? "border-foreground/20 bg-muted/30" : "border-border/70 bg-card"
-              }`}
+        {/* Branch cards */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {locations.map((location, index) => (
+            <motion.div
+              key={location.number}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{
+                duration: 0.65,
+                delay: index * 0.12,
+                ease: "easeOut",
+              }}
             >
-              <div className='flex items-start justify-between gap-3'>
-                <div className='flex size-12 items-center justify-center rounded-2xl border border-border/70 bg-background transition-transform duration-300 group-hover:scale-105'>
-                  <MapPin className='size-5' aria-hidden='true' />
+              <Link
+                href={location.href}
+                aria-label={`Jelajahi ${location.name}`}
+                className="group relative block aspect-[4/5] overflow-hidden rounded-2xl bg-muted sm:aspect-[3/4] lg:aspect-[4/5]"
+              >
+                {/* Branch image */}
+                <Image
+                  src={location.image}
+                  alt={`Suasana ${location.name}`}
+                  fill
+                  sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+
+                {/* Image overlays */}
+                <div className="absolute inset-0 bg-black/10 transition-colors duration-500 group-hover:bg-black/20" />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/20" />
+
+                {/* Branch number */}
+                <div className="absolute left-5 top-5 flex size-10 items-center justify-center rounded-full border border-white/35 bg-black/10 text-xs font-medium text-white backdrop-blur-md">
+                  {location.number}
                 </div>
 
-                <span className='inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground'>
-                  <span className='size-1.5 rounded-full bg-emerald-500' />
-                  Sedang beroperasi
-                </span>
-              </div>
+                {/* Explore icon */}
+                <div className="absolute right-5 top-5 flex size-10 items-center justify-center rounded-full bg-white text-black transition-transform duration-300 group-hover:rotate-45">
+                  <ArrowUpRight className="size-5" />
+                </div>
 
-              <div className='mt-8'>
-                <p className='text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground'>
-                  {location.branch}
-                </p>
+                {/* Branch information */}
+                <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
+                  <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.2em] text-white/70">
+                    {location.concept}
+                  </p>
 
-                <h3 className='mt-2 text-xl font-semibold tracking-tight text-foreground sm:text-2xl'>
-                  {location.name}
-                </h3>
+                  <h3 className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
+                    {location.name}
+                  </h3>
 
-                <div className='mt-3 flex items-start gap-2 text-sm leading-6 text-muted-foreground'>
-                  <MapPin className='mt-1 size-4 shrink-0' aria-hidden='true' />
-                  <div>
-                    <p>{location.address}</p>
-                    <p>{location.city}</p>
+                  <div className="mt-2 flex items-center gap-2 text-sm text-white/70">
+                    <MapPin className="size-3.5 shrink-0" />
+                    <span>{location.city}</span>
+                  </div>
+
+                  <div className="mt-5 flex items-center justify-between border-t border-white/25 pt-4">
+                    <span className="text-xs font-medium uppercase tracking-[0.16em]">
+                      Explore branch
+                    </span>
+
+                    <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
                   </div>
                 </div>
-              </div>
-
-              <div className='mt-6'>
-                <span className='inline-flex rounded-lg bg-muted px-3 py-1.5 text-xs font-medium text-foreground'>
-                  {location.concept}
-                </span>
-
-                <p className='mt-4 text-sm leading-7 text-muted-foreground'>
-                  {location.description}
-                </p>
-              </div>
-
-              <div className='mt-auto pt-7'>
-                <div className='mb-5 border-t border-border/70' />
-
-                <a
-                  href={location.mapUrl}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='group/link inline-flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-                  aria-label={`Lihat petunjuk arah ke ${location.name} di Google Maps`}
-                >
-                  <span>Lihat petunjuk arah</span>
-                  <ArrowUpRight
-                    className='size-4 transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5'
-                    aria-hidden='true'
-                  />
-                </a>
-              </div>
-            </article>
+              </Link>
+            </motion.div>
           ))}
         </div>
 
-        {/* Informasi lokasi yang telah tutup */}
-        <div className='mt-10 rounded-2xl border border-border/70 bg-muted/30 p-5 sm:p-6'>
-          <div className='flex flex-col gap-4 sm:flex-row sm:items-start'>
-            <div className='flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-background'>
-              <Clock3 className='size-5 text-muted-foreground' aria-hidden='true' />
-            </div>
-
-            <div className='flex-1'>
-              <div className='flex flex-wrap items-center gap-2'>
-                <h3 className='font-semibold text-foreground'>Kopilogi Hallway</h3>
-                <span className='rounded-full border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground'>
-                  Tutup permanen
-                </span>
-              </div>
-
-              <p className='mt-2 max-w-3xl text-sm leading-6 text-muted-foreground'>
-                Kopilogi Hallway merupakan bagian dari perjalanan Kopilogi di Garut. Lokasi ini
-                telah tutup secara permanen dan tidak lagi melayani pelanggan. Informasi ini
-                dicantumkan agar pengunjung tidak keliru menganggap Hallway sebagai cabang yang
-                masih beroperasi.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className='mt-10 flex flex-col gap-4 rounded-3xl border border-border/70 bg-card p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8'>
-          <div className='max-w-xl'>
-            <h3 className='text-lg font-semibold tracking-tight text-foreground'>
-              Sudah menentukan tujuanmu?
-            </h3>
-            <p className='mt-2 text-sm leading-6 text-muted-foreground'>
-              Jelajahi pilihan kopi, minuman, makanan, dan dessert sebelum berkunjung ke cabang
-              pilihanmu.
-            </p>
-          </div>
-
-          <Link
-            href='/menu'
-            className='inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-medium text-background transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg'
-          >
-            Jelajahi menu
-            <ArrowUpRight className='size-4' aria-hidden='true' />
-          </Link>
-        </div>
+        {/* Bottom note */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="mt-6 text-xs leading-5 text-muted-foreground"
+        >
+          Setiap cabang punya karakter dan suasana yang berbeda. Temukan tempat yang paling sesuai
+          denganmu.
+        </motion.p>
       </Container>
     </section>
   );

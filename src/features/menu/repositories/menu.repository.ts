@@ -1,4 +1,4 @@
-import "@/features/branches/models/branch.model";
+import { Branch } from "@/features/branches/models/branch.model";
 
 import { Menu } from "../models/menu.model";
 
@@ -115,4 +115,32 @@ export async function findPublicMenuBySlug(slug: string) {
       select: "_id name slug isActive",
     })
     .lean();
+}
+
+export async function findPublicMenuByBranchSlugAndSlug(branchSlug: string, slug: string) {
+  const branch = await Branch.findOne({
+    slug: branchSlug,
+    isActive: true,
+  })
+    .select("_id name slug concept address phone googleMapsUrl openingHours image")
+    .lean();
+
+  if (!branch) {
+    return null;
+  }
+
+  const menu = await Menu.findOne({
+    branchId: branch._id,
+    slug,
+    isAvailable: true,
+  }).lean();
+
+  if (!menu) {
+    return null;
+  }
+
+  return {
+    branch,
+    menu,
+  };
 }
