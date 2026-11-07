@@ -4,10 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, MapPin, ShieldCheck, Clock3, Coffee } from "lucide-react";
 import { useEffect } from "react";
+import { MenuReviewForm } from "@/features/menu/components/menu-review-form";
+import { MenuReviewList } from "./menu-review-list";
 
 type PublicMenuDetailProps = {
   data: {
     branch: {
+      id: string;
       name: string;
       slug: string;
       concept: string;
@@ -16,6 +19,7 @@ type PublicMenuDetailProps = {
       openingHours: string | null;
     };
     menu: {
+      id: string;
       name: string;
       slug: string;
       description: string;
@@ -26,6 +30,13 @@ type PublicMenuDetailProps = {
       priceVerified: boolean;
     };
   };
+  reviews: {
+    id: string;
+    customerName: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+  }[];
 };
 
 const branchThemes: Record<
@@ -75,7 +86,7 @@ function formatPrice(price: number) {
   }).format(price);
 }
 
-export function PublicMenuDetail({ data }: PublicMenuDetailProps) {
+export function PublicMenuDetail({ data, reviews }: PublicMenuDetailProps) {
   const { branch, menu } = data;
 
   const theme = branchThemes[branch.concept] ?? branchThemes["contemporary-cozy"];
@@ -244,6 +255,17 @@ export function PublicMenuDetail({ data }: PublicMenuDetailProps) {
             )}
           </section>
         </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-5 pb-16 sm:px-8 lg:px-12">
+        <MenuReviewList reviews={reviews} />
+
+        <MenuReviewForm
+          menuId={data.menu.id}
+          branchId={data.branch.id}
+          branchSlug={data.branch.slug}
+          menuSlug={data.menu.slug}
+        />
       </div>
     </main>
   );

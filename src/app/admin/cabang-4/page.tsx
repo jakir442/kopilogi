@@ -40,7 +40,8 @@ export default async function Cabang4AdminPage({ searchParams }: Cabang4AdminPag
   }
 
   const params = await searchParams;
-  const activeTab = params.tab === "menu" ? "menu" : "dashboard";
+  const activeTab =
+    params.tab === "menu" ? "menu" : params.tab === "customers" ? "customers" : "dashboard";
 
   const menuResult = await getMenus(String(access.branch._id));
   const menus = menuResult.success ? (menuResult.data ?? []) : [];
