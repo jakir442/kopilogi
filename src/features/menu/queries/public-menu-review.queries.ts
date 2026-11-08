@@ -13,5 +13,14 @@ export async function getApprovedReviewsByMenu(menuId: string) {
     rating: review.rating,
     comment: review.comment,
     createdAt: new Date(review.createdAt).toISOString(),
+    adminReply: review.adminReply
+      ? {
+          message: review.adminReply.message,
+          repliedByName: review.adminReply.repliedByName ?? null,
+          repliedByRole: review.adminReply.repliedByRole ?? null,
+          createdAt: new Date(review.adminReply.createdAt).toISOString(),
+          updatedAt: new Date(review.adminReply.updatedAt).toISOString(),
+        }
+      : null,
   }));
 }
