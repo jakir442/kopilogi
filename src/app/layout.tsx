@@ -9,7 +9,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: {
     default: "Kopilogi — Coffee, Food & Good Moments",
-    template: "%s | Kopilogi",
+    template: "%s",
   },
   description:
     "Jelajahi Kopilogi, tempat untuk menikmati kopi, makanan, dan pengalaman bersama dalam suasana modern.",
