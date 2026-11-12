@@ -1,0 +1,1200 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@import "tailwindcss";
+
+/* =========================================================
+   KOPILOGI — GLOBAL DEFAULT
+   Tema default: Industrial Monochrome (Cabang 1)
+========================================================= */
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #454b4f #101112;
+}
+
+body {
+  background: #101112;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #101112;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #454b4f;
+  border: 2px solid #101112;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #626a70;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #858e94;
+}
+
+::-webkit-scrollbar-corner {
+  background: #101112;
+}
+
+/* =========================================================
+   CABANG 1 — INDUSTRIAL MONOCHROME
+========================================================= */
+
+.kopilogi-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #3b4145 transparent;
+  overscroll-behavior: contain;
+}
+
+.kopilogi-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.kopilogi-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.kopilogi-sidebar::-webkit-scrollbar-thumb {
+  background: #3b4145;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+.kopilogi-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #5d666b;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+.kopilogi-mobile-nav {
+  scrollbar-width: thin;
+  scrollbar-color: #454b4f transparent;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kopilogi-mobile-nav::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.kopilogi-mobile-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.kopilogi-mobile-nav::-webkit-scrollbar-thumb {
+  background: #454b4f;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+.kopilogi-mobile-nav::-webkit-scrollbar-thumb:hover {
+  background: #687177;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+/* =========================================================
+   CABANG 2 — TRADITIONAL HERITAGE
+   Tambahkan class kopilogi-heritage-scroll pada area scroll
+========================================================= */
+
+.kopilogi-heritage-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #b99a72 #ede4d6;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kopilogi-heritage-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.kopilogi-heritage-scroll::-webkit-scrollbar-track {
+  background: #ede4d6;
+  border-radius: 9999px;
+}
+
+.kopilogi-heritage-scroll::-webkit-scrollbar-thumb {
+  background: #b99a72;
+  border: 2px solid #ede4d6;
+  border-radius: 9999px;
+}
+
+.kopilogi-heritage-scroll::-webkit-scrollbar-thumb:hover {
+  background: #9a7c5d;
+}
+
+.kopilogi-heritage-scroll::-webkit-scrollbar-thumb:active {
+  background: #765239;
+}
+
+.kopilogi-heritage-scroll::-webkit-scrollbar-corner {
+  background: #ede4d6;
+}
+
+/* Scrollbar halaman Cabang 2 */
+html.heritage-theme {
+  scrollbar-color: #b99a72 #ede4d6;
+}
+
+html.heritage-theme body {
+  background: #f5f0e7;
+}
+
+html.heritage-theme::-webkit-scrollbar-track {
+  background: #ede4d6;
+}
+
+html.heritage-theme::-webkit-scrollbar-thumb {
+  background: #b99a72;
+  border-color: #ede4d6;
+}
+
+html.heritage-theme::-webkit-scrollbar-thumb:hover {
+  background: #9a7c5d;
+}
+
+html.heritage-theme::-webkit-scrollbar-thumb:active {
+  background: #765239;
+}
+
+html.heritage-theme::-webkit-scrollbar-corner {
+  background: #ede4d6;
+}
+
+/* =========================================================
+   CABANG 3 — HALLWAY
+   Monochrome, kontras tinggi, minimalis
+========================================================= */
+
+.kopilogi-hallway-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #777777 #171717;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kopilogi-hallway-scroll::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.kopilogi-hallway-scroll::-webkit-scrollbar-track {
+  background: #171717;
+}
+
+.kopilogi-hallway-scroll::-webkit-scrollbar-thumb {
+  background: #777777;
+  border: 2px solid #171717;
+  border-radius: 2px;
+}
+
+.kopilogi-hallway-scroll::-webkit-scrollbar-thumb:hover {
+  background: #bdbdbd;
+}
+
+.kopilogi-hallway-scroll::-webkit-scrollbar-thumb:active {
+  background: #f5f5f5;
+}
+
+.kopilogi-hallway-scroll::-webkit-scrollbar-corner {
+  background: #171717;
+}
+
+/* Scrollbar halaman Cabang 3 */
+html.hallway-theme {
+  scrollbar-color: #777777 #171717;
+}
+
+html.hallway-theme body {
+  background: #0b0b0b;
+}
+
+html.hallway-theme::-webkit-scrollbar-track {
+  background: #171717;
+}
+
+html.hallway-theme::-webkit-scrollbar-thumb {
+  background: #777777;
+  border-color: #171717;
+  border-radius: 2px;
+}
+
+html.hallway-theme::-webkit-scrollbar-thumb:hover {
+  background: #bdbdbd;
+}
+
+html.hallway-theme::-webkit-scrollbar-thumb:active {
+  background: #f5f5f5;
+}
+
+html.hallway-theme::-webkit-scrollbar-corner {
+  background: #171717;
+}
+
+/* =========================================================
+   CABANG 4 — COZY
+   Krem hangat, cokelat lembut, dan aksen kopi
+========================================================= */
+
+.kopilogi-cozy-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #b89a7a #f3eadc;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kopilogi-cozy-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.kopilogi-cozy-scroll::-webkit-scrollbar-track {
+  background: #f3eadc;
+  border-radius: 9999px;
+}
+
+.kopilogi-cozy-scroll::-webkit-scrollbar-thumb {
+  background: #b89a7a;
+  border: 2px solid #f3eadc;
+  border-radius: 9999px;
+}
+
+.kopilogi-cozy-scroll::-webkit-scrollbar-thumb:hover {
+  background: #967453;
+}
+
+.kopilogi-cozy-scroll::-webkit-scrollbar-thumb:active {
+  background: #74543b;
+}
+
+.kopilogi-cozy-scroll::-webkit-scrollbar-corner {
+  background: #f3eadc;
+}
+
+/* Scrollbar halaman Cabang 4 */
+html.cozy-theme {
+  scrollbar-color: #b89a7a #f3eadc;
+}
+
+html.cozy-theme body {
+  background: #faf6ef;
+}
+
+html.cozy-theme::-webkit-scrollbar-track {
+  background: #f3eadc;
+}
+
+html.cozy-theme::-webkit-scrollbar-thumb {
+  background: #b89a7a;
+  border-color: #f3eadc;
+}
+
+html.cozy-theme::-webkit-scrollbar-thumb:hover {
+  background: #967453;
+}
+
+html.cozy-theme::-webkit-scrollbar-thumb:active {
+  background: #74543b;
+}
+
+html.cozy-theme::-webkit-scrollbar-corner {
+  background: #f3eadc;
+}
+
+/* =========================================================
+   KOPILOGI CABANG 4 — CONTEMPORARY COZY
+========================================================= */
+
+html.cozy-theme {
+  scrollbar-width: thin;
+  scrollbar-color: #777777 #f5f5f3;
+}
+
+html.cozy-theme body {
+  background: #f5f5f3;
+}
+
+/* Chrome, Edge, Safari */
+html.cozy-theme::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html.cozy-theme::-webkit-scrollbar-track {
+  background: #f5f5f3;
+}
+
+html.cozy-theme::-webkit-scrollbar-thumb {
+  background: #a3a3a3;
+  border: 2px solid #f5f5f3;
+  border-radius: 9999px;
+}
+
+html.cozy-theme::-webkit-scrollbar-thumb:hover {
+  background: #737373;
+}
+
+html.cozy-theme::-webkit-scrollbar-thumb:active {
+  background: #525252;
+}
+
+html.cozy-theme::-webkit-scrollbar-corner {
+  background: #f5f5f3;
+}
+
+/* Sidebar dan drawer mobile */
+.cozy-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #525252 transparent;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cozy-sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.cozy-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cozy-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #525252;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+.cozy-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #737373;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+/* =========================================================
+   LANDING PAGE — LIGHT NEUTRAL
+   Scrollbar terang, bersih, dan minimalis
+========================================================= */
+
+html.landing-theme {
+  color-scheme: light;
+  scrollbar-width: thin;
+  scrollbar-color: #c7c7c0 #f5f5f2;
+}
+
+html.landing-theme::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+html.landing-theme::-webkit-scrollbar-track {
+  background: #f5f5f2;
+}
+
+html.landing-theme::-webkit-scrollbar-thumb {
+  background: #c7c7c0;
+  border: 2px solid #f5f5f2;
+  border-radius: 9999px;
+}
+
+html.landing-theme::-webkit-scrollbar-thumb:hover {
+  background: #a3a39b;
+}
+
+html.landing-theme::-webkit-scrollbar-thumb:active {
+  background: #85857d;
+}
+
+html.landing-theme::-webkit-scrollbar-corner {
+  background: #f5f5f2;
+}
+
+/* =========================================================
+   SUPER ADMIN — LIGHT NEUTRAL
+   Tema dashboard pengelola seluruh cabang
+========================================================= */
+
+html.super-admin-theme {
+  scrollbar-width: thin;
+  scrollbar-color: #b8b8b2 #f6f5f2;
+}
+
+html.super-admin-theme::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html.super-admin-theme::-webkit-scrollbar-track {
+  background: #f6f5f2;
+}
+
+html.super-admin-theme::-webkit-scrollbar-thumb {
+  background: #b8b8b2;
+  border: 2px solid #f6f5f2;
+  border-radius: 9999px;
+}
+
+html.super-admin-theme::-webkit-scrollbar-thumb:hover {
+  background: #92928b;
+}
+
+html.super-admin-theme::-webkit-scrollbar-thumb:active {
+  background: #73736d;
+}
+
+html.super-admin-theme::-webkit-scrollbar-corner {
+  background: #f6f5f2;
+}
+
+/* =========================================
+   KOPILOGI REGISTER PAGE ANIMATIONS
+========================================= */
+
+@keyframes register-panel-left-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes register-panel-right-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes register-content-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes register-blend-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.register-panel-left {
+  animation: register-panel-left-enter 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.register-panel-right {
+  animation: register-panel-right-enter 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 100ms;
+}
+
+.register-brand-content {
+  animation: register-content-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 250ms;
+}
+
+.register-form-content {
+  animation: register-content-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 350ms;
+}
+
+.register-blend {
+  animation: register-blend-enter 1100ms ease-out both;
+  animation-delay: 250ms;
+}
+
+.register-form-card {
+  animation: register-content-enter 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 500ms;
+}
+
+/* Hormati preferensi reduced motion pengguna */
+@media (prefers-reduced-motion: reduce) {
+  .register-panel-left,
+  .register-panel-right,
+  .register-brand-content,
+  .register-form-content,
+  .register-blend,
+  .register-form-card {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* =========================================
+   KOPILOGI register - AMBIENT BLEND GLOW
+   Continuous breathing / looping animation
+========================================= */
+
+@keyframes register-ambient-breathe {
+  0% {
+    opacity: 0.25;
+    transform: scale(0.75);
+    filter: blur(65px);
+  }
+
+  25% {
+    opacity: 0.55;
+    transform: scale(0.95);
+    filter: blur(75px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+    filter: blur(95px);
+  }
+
+  75% {
+    opacity: 0.55;
+    transform: scale(0.95);
+    filter: blur(75px);
+  }
+
+  100% {
+    opacity: 0.25;
+    transform: scale(0.75);
+    filter: blur(65px);
+  }
+}
+
+@keyframes register-ambient-orb {
+  0% {
+    opacity: 0.15;
+    transform: scale(0.65) translateY(10%);
+  }
+
+  25% {
+    opacity: 0.35;
+    transform: scale(0.9) translateY(5%);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: scale(1.3) translateY(0);
+  }
+
+  75% {
+    opacity: 0.35;
+    transform: scale(0.9) translateY(-5%);
+  }
+
+  100% {
+    opacity: 0.15;
+    transform: scale(0.65) translateY(10%);
+  }
+}
+
+/* Cahaya utama */
+.register-ambient-glow {
+  transform-origin: center;
+  animation: register-ambient-breathe 4.5s ease-in-out infinite;
+  will-change: transform, opacity, filter;
+}
+
+/* Cahaya kedua */
+.register-ambient-orb {
+  transform-origin: center;
+  animation: register-ambient-orb 6s ease-in-out infinite;
+  animation-delay: -1.5s;
+  will-change: transform, opacity;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .register-ambient-glow,
+  .register-ambient-orb {
+    animation: none !important;
+    will-change: auto;
+  }
+}
+
+/* =========================================
+   KOPILOGI LOGIN
+   FIRST LOAD — SOFT AMBIENT BLEND
+   ========================================= */
+
+@keyframes login-blend-reveal {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.65);
+  }
+
+  45% {
+    opacity: 0.9;
+    transform: scaleX(1.08);
+  }
+
+  75% {
+    opacity: 0.7;
+    transform: scaleX(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes login-glow-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.65);
+    filter: blur(80px);
+  }
+
+  45% {
+    opacity: 0.85;
+    transform: translateY(-50%) scale(1.12);
+    filter: blur(95px);
+  }
+
+  70% {
+    opacity: 0.68;
+    transform: translateY(-50%) scale(0.97);
+    filter: blur(88px);
+  }
+
+  100% {
+    opacity: 0.72;
+    transform: translateY(-50%) scale(1);
+    filter: blur(85px);
+  }
+}
+
+@keyframes login-orb-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.55);
+    filter: blur(100px);
+  }
+
+  50% {
+    opacity: 0.72;
+    transform: translateY(-50%) scale(1.12);
+    filter: blur(115px);
+  }
+
+  75% {
+    opacity: 0.48;
+    transform: translateY(-50%) scale(0.96);
+    filter: blur(105px);
+  }
+
+  100% {
+    opacity: 0.52;
+    transform: translateY(-50%) scale(1);
+    filter: blur(100px);
+  }
+}
+
+@keyframes login-edge-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scaleY(0.45);
+  }
+
+  45% {
+    opacity: 0.65;
+    transform: translateY(-50%) scaleY(1.12);
+  }
+
+  100% {
+    opacity: 0.5;
+    transform: translateY(-50%) scaleY(1);
+  }
+}
+
+/* =========================================
+   LOGIN AMBIENT — VISIBLE BREATHING
+   ========================================= */
+
+@keyframes login-glow-breathe {
+  0% {
+    opacity: 0.35;
+    transform: translateY(-50%) scale(0.78);
+    filter: blur(75px);
+  }
+
+  25% {
+    opacity: 0.65;
+    transform: translateY(-50%) scale(0.96);
+    filter: blur(85px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.22);
+    filter: blur(105px);
+  }
+
+  75% {
+    opacity: 0.65;
+    transform: translateY(-50%) scale(0.96);
+    filter: blur(85px);
+  }
+
+  100% {
+    opacity: 0.35;
+    transform: translateY(-50%) scale(0.78);
+    filter: blur(75px);
+  }
+}
+
+@keyframes login-orb-breathe {
+  0% {
+    opacity: 0.15;
+    transform: translateY(-50%) scale(0.65);
+  }
+
+  25% {
+    opacity: 0.35;
+    transform: translateY(-50%) scale(0.9);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: translateY(-50%) scale(1.3);
+  }
+
+  75% {
+    opacity: 0.35;
+    transform: translateY(-50%) scale(0.9);
+  }
+
+  100% {
+    opacity: 0.15;
+    transform: translateY(-50%) scale(0.65);
+  }
+}
+
+@keyframes login-edge-breathe {
+  0% {
+    opacity: 0.15;
+    transform: translateY(-50%) scaleY(0.75);
+  }
+
+  50% {
+    opacity: 0.55;
+    transform: translateY(-50%) scaleY(1.15);
+  }
+
+  100% {
+    opacity: 0.15;
+    transform: translateY(-50%) scaleY(0.75);
+  }
+}
+
+/* =========================================
+   FIRST LOAD
+   ========================================= */
+
+.login-blend {
+  transform-origin: right center;
+  animation: login-blend-reveal 1.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.login-ambient-glow {
+  transform-origin: center;
+
+  animation:
+    login-glow-reveal 1.8s cubic-bezier(0.22, 1, 0.36, 1) both,
+    login-glow-breathe 7s ease-in-out 1.8s infinite;
+
+  will-change: transform, opacity, filter;
+}
+
+.login-ambient-orb {
+  transform-origin: center;
+
+  animation:
+    login-orb-reveal 2.1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both,
+    login-orb-breathe 9s ease-in-out 2.1s infinite;
+
+  will-change: transform, opacity;
+}
+
+.login-edge-highlight {
+  transform-origin: center;
+
+  animation:
+    login-edge-reveal 1.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both,
+    login-edge-breathe 6s ease-in-out 1.9s infinite;
+
+  will-change: transform, opacity;
+}
+
+/* =========================================
+   REDUCED MOTION
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .login-blend,
+  .login-ambient-glow,
+  .login-ambient-orb,
+  .login-edge-highlight {
+    animation: none !important;
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
+@custom-variant dark (&:is(.dark *));
+
+/* Cursor Pointer untuk elemen interaktif */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  label[for],
+  select:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+}
+
+
+/* =========================================
+   BRANCH PAGE SCROLLBAR THEMES, detail menu
+   ========================================= */
+
+/* Cabang 1 — Modern Futuristic */
+html.modern-theme {
+  scrollbar-color: #C5F467 #30362E;
+  scrollbar-width: thin;
+}
+
+html.modern-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.modern-theme::-webkit-scrollbar-track {
+  background: #30362E;
+}
+
+html.modern-theme::-webkit-scrollbar-thumb {
+  background: #C5F467;
+  border-radius: 9999px;
+}
+
+/* Cabang 2 — Traditional Heritage */
+html.heritage-theme {
+  scrollbar-color: #9D482C #D9C6A8;
+  scrollbar-width: thin;
+}
+
+html.heritage-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.heritage-theme::-webkit-scrollbar-track {
+  background: #D9C6A8;
+}
+
+html.heritage-theme::-webkit-scrollbar-thumb {
+  background: #9D482C;
+  border-radius: 9999px;
+}
+
+/* Cabang 4 — Contemporary Cozy */
+html.cozy-theme {
+  scrollbar-color: #C17B52 #DED6C9;
+  scrollbar-width: thin;
+}
+
+html.cozy-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.cozy-theme::-webkit-scrollbar-track {
+  background: #DED6C9;
+}
+
+html.cozy-theme::-webkit-scrollbar-thumb {
+  background: #C17B52;
+  border-radius: 9999px;
+}
+
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * Kopilogi Design System
+ *
+ * Direction:
+ * Modern / Premium / Warm / Editorial
+ *
+ * Primary palette:
+ * Warm white + charcoal + espresso
+ *
+ * The color system intentionally avoids an overly
+ * rustic coffee-shop appearance.
+ */
+
+:root {
+  --label: oklch(49.208% 0.128 47.421);
+  --label-foreground: oklch(0.985 0.006 85);
+
+  --background: oklch(0.985 0.006 85);
+  --foreground: oklch(0.19 0.012 55);
+
+  --card: oklch(0.995 0.003 85);
+  --card-foreground: oklch(0.19 0.012 55);
+
+  --popover: oklch(0.995 0.003 85);
+  --popover-foreground: oklch(0.19 0.012 55);
+
+  /* Deep espresso / charcoal */
+  --primary: oklch(0.23 0.025 50);
+  --primary-foreground: oklch(0.985 0.006 85);
+
+  /* Warm neutral */
+  --secondary: oklch(0.94 0.012 78);
+  --secondary-foreground: oklch(0.25 0.018 55);
+
+  --muted: oklch(0.95 0.009 80);
+  --muted-foreground: oklch(0.48 0.018 60);
+
+  /* Subtle warm accent */
+  --accent: oklch(0.91 0.035 70);
+  --accent-foreground: oklch(0.25 0.02 55);
+
+  --destructive: oklch(0.577 0.245 27.325);
+
+  --border: oklch(0.88 0.012 78);
+  --input: oklch(0.88 0.012 78);
+
+  /* Accessible warm focus ring */
+  --ring: oklch(0.48 0.07 58);
+
+  /*
+   * Charts
+   *
+   * Kept as neutral/warm values so future dashboard
+   * components remain visually consistent.
+   */
+  --chart-1: oklch(0.52 0.09 55);
+  --chart-2: oklch(0.62 0.07 72);
+  --chart-3: oklch(0.42 0.035 55);
+  --chart-4: oklch(0.72 0.055 82);
+  --chart-5: oklch(0.32 0.025 50);
+
+  /* Modern but not overly rounded */
+  --radius: 0.75rem;
+
+  /* Sidebar tokens retained for shadcn compatibility */
+  --sidebar: oklch(0.97 0.008 82);
+  --sidebar-foreground: oklch(0.19 0.012 55);
+  --sidebar-primary: oklch(0.23 0.025 50);
+  --sidebar-primary-foreground: oklch(0.985 0.006 85);
+  --sidebar-accent: oklch(0.92 0.018 76);
+  --sidebar-accent-foreground: oklch(0.25 0.018 55);
+  --sidebar-border: oklch(0.88 0.012 78);
+  --sidebar-ring: oklch(0.48 0.07 58);
+}
+
+/*
+ * Dark mode
+ *
+ * Kopilogi does not depend on dark mode for the primary
+ * visual identity, but the token system remains ready
+ * for future dark-mode support.
+ */
+
+.dark {
+  --background: oklch(0.16 0.012 55);
+  --foreground: oklch(0.96 0.008 82);
+
+  --card: oklch(0.2 0.015 55);
+  --card-foreground: oklch(0.96 0.008 82);
+
+  --popover: oklch(0.2 0.015 55);
+  --popover-foreground: oklch(0.96 0.008 82);
+
+  --primary: oklch(0.91 0.035 72);
+  --primary-foreground: oklch(0.2 0.015 55);
+
+  --secondary: oklch(0.27 0.018 55);
+  --secondary-foreground: oklch(0.95 0.008 82);
+
+  --muted: oklch(0.27 0.018 55);
+  --muted-foreground: oklch(0.72 0.018 70);
+
+  --accent: oklch(0.3 0.028 58);
+  --accent-foreground: oklch(0.95 0.008 82);
+
+  --destructive: oklch(0.704 0.191 22.216);
+
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+
+  --ring: oklch(0.72 0.055 72);
+
+  --chart-1: oklch(0.72 0.055 72);
+  --chart-2: oklch(0.62 0.07 55);
+  --chart-3: oklch(0.78 0.035 82);
+  --chart-4: oklch(0.52 0.05 55);
+  --chart-5: oklch(0.42 0.035 50);
+
+  --sidebar: oklch(0.2 0.015 55);
+  --sidebar-foreground: oklch(0.96 0.008 82);
+  --sidebar-primary: oklch(0.91 0.035 72);
+  --sidebar-primary-foreground: oklch(0.2 0.015 55);
+  --sidebar-accent: oklch(0.27 0.018 55);
+  --sidebar-accent-foreground: oklch(0.95 0.008 82);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.72 0.055 72);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    min-height: 100vh;
+    font-feature-settings: "kern";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: oklch(0.82 0.045 68);
+    color: oklch(0.2 0.015 55);
+  }
+
+  img {
+    height: auto;
+    max-width: 100%;
+  }
+
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
