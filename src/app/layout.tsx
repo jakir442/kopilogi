@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://kopilogi-kita.vercel.app"),
   title: {
     default: "Kopilogi — Coffee, Food & Good Moments",
     template: "%s",
