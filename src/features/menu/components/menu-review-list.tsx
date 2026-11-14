@@ -9,6 +9,13 @@ type MenuReview = {
   rating: number;
   comment: string;
   createdAt: string;
+  adminReply?: {
+    message: string;
+    repliedByName?: string | null;
+    repliedByRole?: "admin" | "super_admin" | null;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
 };
 
 type MenuReviewListProps = {
@@ -204,6 +211,49 @@ export function MenuReviewList({ reviews = [] }: MenuReviewListProps) {
             <p className="mt-5 text-base leading-7">
               {review.comment || "Pelanggan tidak menambahkan komentar."}
             </p>
+
+            {/* Admin Reply */}
+            {review.adminReply?.message?.trim() && (
+              <div className="mt-5 rounded-2xl border border-[var(--detail-border)] bg-[var(--detail-muted)]/5 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--detail-accent)]/10 text-[var(--detail-accent)]">
+                    <span className="text-sm font-bold">K</span>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <p className="text-sm font-semibold">Balasan dari Kopilogi</p>
+
+                      <span className="text-[var(--detail-muted)]">·</span>
+
+                      <p className="text-xs text-[var(--detail-muted)]">
+                        {review.adminReply.repliedByRole === "super_admin"
+                          ? "Super Admin · Owner"
+                          : review.adminReply.repliedByRole === "admin"
+                            ? "Admin · Karyawan"
+                            : review.adminReply.repliedByName || "Admin Kopilogi"}
+                      </p>
+                    </div>
+
+                    <p className="mt-2 text-sm leading-6 text-[var(--detail-muted)]">
+                      {review.adminReply.message}
+                    </p>
+
+                    <p className="mt-2 text-[11px] text-[var(--detail-muted)]">
+                      Dibalas{" "}
+                      {new Date(review.adminReply.updatedAt).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                      {review.adminReply.updatedAt !== review.adminReply.createdAt && (
+                        <span> · Diperbarui</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Customer */}
             <div className="mt-6 border-t border-[var(--detail-border)] pt-4">
