@@ -1,7 +1,6 @@
-
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://kopilogi.vercel.app";
+const BASE_URL = "https://kopilogi-kita.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
