@@ -9,7 +9,7 @@ import { getMenus } from "@/features/menu/actions/menu.actions";
 
 export const metadata: Metadata = {
   title: "Cabang 1 | Admin Kopilogi",
-  description: "Dashboard dan manajemen menu Kopilogi Cabang 1.",
+  description: "Dashboard, menu, pelanggan, dan konten website Kopilogi Cabang 1.",
 };
 
 async function handleSignOut() {
@@ -40,12 +40,12 @@ export default async function Cabang1AdminPage({ searchParams }: Cabang1AdminPag
 
   const params = await searchParams;
   const activeTab =
-    params.tab === "menu" 
-      ? "menu" 
-      : params.tab === "customers" 
-        ? "customers" 
-        : params.tab === "settings"
-          ? "settings"
+    params.tab === "menu"
+      ? "menu"
+      : params.tab === "customers"
+        ? "customers"
+        : params.tab === "content"
+          ? "content"
           : "dashboard";
 
   const menuResult = await getMenus(String(access.branch._id));
