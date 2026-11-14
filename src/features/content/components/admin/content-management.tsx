@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import {
-  ArrowUpRight,
-  CalendarDays, Check, Clock3, ExternalLink, FileImage, Globe2, ImagePlus,
+  ArrowUpRight, CalendarDays, Check, Clock3, ExternalLink, FileImage, Globe2, ImagePlus,
   LoaderCircle, Menu, Newspaper, Pencil, Plus, RefreshCw, Search, Sparkles,
   Trash2, Users, X,
 } from "lucide-react";
