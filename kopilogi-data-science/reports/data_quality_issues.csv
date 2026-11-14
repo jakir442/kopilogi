@@ -1,0 +1,6 @@
+issue_id,column,issue,affected_records,action,status
+DQ001,is_best_seller,Seluruh nilai kosong,183,Pertahankan sebagai unknown,pending
+DQ002,is_available,Seluruh nilai kosong,183,Tunda penggunaan kolom,pending
+DQ003,branch_id,Katalog BR001 dan BR003 identik,112,Verifikasi katalog kedua cabang,pending
+DQ004,menu_name,Nama menu berulang dalam kategori berbeda,16,"Pertahankan, periksa konteks kategori",pending
+DQ005,price,Harga maksimum jauh di atas median,2,Periksa harga Gemon 1L pada sumber,pending
