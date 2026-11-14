@@ -15,6 +15,8 @@ import {
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import type { PublicMenu, PublicMenuCategory } from "@/features/menu/types";
+import type { BranchContent } from "@/features/content/types";
+import { BranchContentSections } from "@/features/content/components/public/branch-content-sections";
 
 type BranchConcept = "modern-futuristic" | "traditional-heritage" | "contemporary-cozy";
 
@@ -33,6 +35,7 @@ type BranchData = {
 type BranchLandingPageProps = {
   branch: BranchData;
   menus: PublicMenu[];
+  contents?: BranchContent[];
 };
 
 type CategoryFilter = "Semua" | PublicMenuCategory;
@@ -147,7 +150,7 @@ function getServerBestSellerVisibleCount() {
   return 2;
 }
 
-export function BranchLandingPage({ branch, menus }: BranchLandingPageProps) {
+export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandingPageProps) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("Semua");
   const [currentPage, setCurrentPage] = useState(1);
@@ -999,6 +1002,18 @@ export function BranchLandingPage({ branch, menus }: BranchLandingPageProps) {
           )}
         </div>
       </section>
+
+      {/* =========================================================
+          KONTEN WEBSITE CABANG
+          Seluruh konten CMS ditampilkan setelah katalog menu.
+      ========================================================== */}
+      {contents.length > 0 && (
+        <BranchContentSections
+          contents={contents}
+          branchName={branch.name}
+          branchSlug={branch.slug}
+        />
+      )}
 
       {/* =========================================================
           INFORMASI CABANG

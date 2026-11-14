@@ -2,49 +2,33 @@
 
 import { revalidatePath } from "next/cache";
 import { Types } from "mongoose";
+
 import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/mongodb";
+
 import {
-  createMenuReview,
   deleteMenuReview,
-  deleteMenuReviewReply,
-  findReviewMenuSlug,
   findReviewsByBranch,
   getReviewSummary,
-  saveMenuReviewReply,
   updateReviewStatus,
+  createMenuReview,
 } from "../repositories/menu-review.repository";
-import type { MenuReviewReplyRole, MenuReviewStatus } from "../models/menu-review.model";
 
-type ReviewStatus = MenuReviewStatus;
+type ReviewStatus = "pending" | "approved" | "rejected";
 
-interface BranchReviewInput {
+type BranchReviewInput = {
   branchId: string;
   branchSlug: string;
-}
+};
 
-interface UpdateReviewInput extends BranchReviewInput {
+type UpdateReviewInput = BranchReviewInput & {
   reviewId: string;
   status: ReviewStatus;
-}
+};
 
-interface DeleteReviewInput extends BranchReviewInput {
+type DeleteReviewInput = BranchReviewInput & {
   reviewId: string;
-}
-
-interface MenuReviewReplyInput extends BranchReviewInput {
-  reviewId: string;
-  message: string;
-}
-
-interface CreateMenuReviewInput {
-  menuId: string;
-  branchId: string;
-  branchSlug: string;
-  menuSlug: string;
-  rating: number;
-  comment: string;
-}
+};
 
 export interface CustomerReviewItem {
   id: string;
@@ -55,95 +39,53 @@ export interface CustomerReviewItem {
   comment: string;
   status: ReviewStatus;
   createdAt: string;
-  adminReply: {
-    message: string;
-    repliedByName?: string;
-    repliedByRole?: MenuReviewReplyRole;
-    createdAt: string;
-    updatedAt: string;
-  } | null;
 }
 
 export interface CustomerReviewSummary {
-  total: number;
-  pending: number;
-  rejected: number;
-  approved: number;
+  totalReviews: number;
   averageRating: number;
+  pendingReviews: number;
+  approvedReviews: number;
+  rejectedReviews: number;
 }
-
-type ActionResult<T = undefined> = {
-  success: boolean;
-  message: string;
-  data?: T;
-};
-
-const isValidObjectId = (value: string) => Types.ObjectId.isValid(value);
-
-const isValidBranchSlug = (value: string) => /^cabang-[1-4]$/.test(value);
 
 async function requireCustomerReviewPermission() {
   const session = await auth();
 
   if (!session?.user) {
-    return {
-      success: false as const,
-      message: "Silakan login terlebih dahulu.",
-    };
+    throw new Error("Anda harus login untuk melakukan tindakan ini.");
   }
 
   const role = session.user.role;
 
   if (role !== "admin" && role !== "super_admin") {
-    return {
-      success: false as const,
-      message: "Anda tidak memiliki izin untuk mengelola review.",
-    };
+    throw new Error("Anda tidak memiliki izin untuk mengelola ulasan pelanggan.");
   }
 
-  return {
-    success: true as const,
-    session,
-  };
+  return session;
 }
 
-function revalidateCustomerReviewPaths(branchSlug: string, menuSlug?: string | null) {
+function isValidObjectId(value: string) {
+  return Types.ObjectId.isValid(value);
+}
+
+function revalidateCustomerReviewPaths(branchSlug: string) {
   revalidatePath(`/admin/${branchSlug}`);
   revalidatePath(`/admin/${branchSlug}?tab=customers`);
-
-  if (menuSlug) {
-    revalidatePath(`/${branchSlug}/${menuSlug}`);
-  }
 }
 
-/**
- * Mengambil review pelanggan untuk halaman admin.
- */
-export async function getCustomerReviewsAction(input: BranchReviewInput): Promise<
-  ActionResult<{
-    reviews: CustomerReviewItem[];
-    summary: CustomerReviewSummary;
-  }>
-> {
-  const permission = await requireCustomerReviewPermission();
-
-  if (!permission.success) {
-    return {
-      success: false,
-      message: permission.message,
-    };
-  }
-
-  const { branchId, branchSlug } = input;
-
-  if (!isValidObjectId(branchId) || !isValidBranchSlug(branchSlug)) {
-    return {
-      success: false,
-      message: "Data cabang tidak valid.",
-    };
-  }
-
+export async function getCustomerReviewsAction({ branchId, branchSlug }: BranchReviewInput) {
   try {
+    await requireCustomerReviewPermission();
+
+    if (!branchId || !isValidObjectId(branchId)) {
+      return {
+        success: false,
+        message: "Branch ID tidak valid.",
+        data: null,
+      };
+    }
+
     await connectToDatabase();
 
     const [reviews, summary] = await Promise.all([
@@ -152,47 +94,32 @@ export async function getCustomerReviewsAction(input: BranchReviewInput): Promis
     ]);
 
     const serializedReviews: CustomerReviewItem[] = reviews.map((review) => {
-      const populatedMenu = review.menuId as unknown as {
-        _id?: Types.ObjectId;
-        name?: string;
-        slug?: string;
-      };
-
-      const adminReply = review.adminReply;
+      const populatedMenu = review.menuId;
 
       return {
-        id: review._id.toString(),
-        menuId: populatedMenu?._id?.toString() ?? "",
-        menuName: populatedMenu?.name ?? "Menu tidak tersedia",
+        id: String(review._id),
+        menuId:
+          populatedMenu && typeof populatedMenu === "object" && "_id" in populatedMenu
+            ? String(populatedMenu._id)
+            : "",
+        menuName:
+          populatedMenu && typeof populatedMenu === "object" && "name" in populatedMenu
+            ? String(populatedMenu.name)
+            : "Menu tidak ditemukan",
         customerName: review.customerName,
         rating: review.rating,
         comment: review.comment,
         status: review.status,
         createdAt: new Date(review.createdAt).toISOString(),
-        adminReply: adminReply
-          ? {
-              message: adminReply.message,
-              repliedByName: adminReply.repliedByName,
-              repliedByRole: adminReply.repliedByRole,
-              createdAt: new Date(adminReply.createdAt).toISOString(),
-              updatedAt: new Date(adminReply.updatedAt).toISOString(),
-            }
-          : null,
       };
     });
 
     return {
       success: true,
-      message: "Review pelanggan berhasil dimuat.",
+      message: "Data ulasan berhasil dimuat.",
       data: {
         reviews: serializedReviews,
-        summary: {
-          total: summary.total,
-          pending: summary.pending,
-          rejected: summary.rejected,
-          approved: summary.approved,
-          averageRating: summary.averageRating,
-        },
+        summary,
       },
     };
   } catch (error) {
@@ -200,324 +127,169 @@ export async function getCustomerReviewsAction(input: BranchReviewInput): Promis
 
     return {
       success: false,
-      message: "Gagal memuat review pelanggan.",
+      message: error instanceof Error ? error.message : "Gagal memuat data ulasan.",
+      data: null,
     };
   }
 }
 
-/**
- * Mengubah status review pelanggan.
- */
-export async function updateMenuReviewStatusAction(
-  input: UpdateReviewInput,
-): Promise<ActionResult> {
-  const permission = await requireCustomerReviewPermission();
-
-  if (!permission.success) {
-    return {
-      success: false,
-      message: permission.message,
-    };
-  }
-
-  const { reviewId, branchId, branchSlug, status } = input;
-
-  if (!isValidObjectId(reviewId) || !isValidObjectId(branchId) || !isValidBranchSlug(branchSlug)) {
-    return {
-      success: false,
-      message: "Data review atau cabang tidak valid.",
-    };
-  }
-
-  if (!["pending", "approved", "rejected"].includes(status)) {
-    return {
-      success: false,
-      message: "Status review tidak valid.",
-    };
-  }
-
+export async function updateMenuReviewStatusAction({
+  reviewId,
+  status,
+  branchId,
+  branchSlug,
+}: UpdateReviewInput) {
   try {
-    await connectToDatabase();
+    await requireCustomerReviewPermission();
 
-    const menuSlug = await findReviewMenuSlug(reviewId, branchId);
-
-    const updatedReview = await updateReviewStatus(reviewId, status, branchId);
-
-    if (!updatedReview) {
+    if (!reviewId || !isValidObjectId(reviewId)) {
       return {
         success: false,
-        message: "Review tidak ditemukan pada cabang ini.",
+        message: "ID ulasan tidak valid.",
       };
     }
 
-    revalidateCustomerReviewPaths(branchSlug, menuSlug);
+    if (!branchId || !isValidObjectId(branchId)) {
+      return {
+        success: false,
+        message: "Branch ID tidak valid.",
+      };
+    }
+
+    if (!["pending", "approved", "rejected"].includes(status)) {
+      return {
+        success: false,
+        message: "Status ulasan tidak valid.",
+      };
+    }
+
+    await connectToDatabase();
+
+    const review = await updateReviewStatus(reviewId, status, branchId);
+
+    if (!review) {
+      return {
+        success: false,
+        message: "Ulasan tidak ditemukan pada cabang ini.",
+      };
+    }
+
+    revalidateCustomerReviewPaths(branchSlug);
 
     return {
       success: true,
-      message: "Status review berhasil diperbarui.",
+      message:
+        status === "approved"
+          ? "Ulasan berhasil disetujui."
+          : status === "rejected"
+            ? "Ulasan berhasil ditolak."
+            : "Status ulasan berhasil diperbarui.",
     };
   } catch (error) {
     console.error("[updateMenuReviewStatusAction]", error);
 
     return {
       success: false,
-      message: "Gagal memperbarui status review.",
+      message: error instanceof Error ? error.message : "Gagal memperbarui status ulasan.",
     };
   }
 }
 
-/**
- * Menghapus review pelanggan beserta balasan yang melekat padanya.
- */
-export async function removeMenuReviewAction(input: DeleteReviewInput): Promise<ActionResult> {
-  const permission = await requireCustomerReviewPermission();
-
-  if (!permission.success) {
-    return {
-      success: false,
-      message: permission.message,
-    };
-  }
-
-  const { reviewId, branchId, branchSlug } = input;
-
-  if (!isValidObjectId(reviewId) || !isValidObjectId(branchId) || !isValidBranchSlug(branchSlug)) {
-    return {
-      success: false,
-      message: "Data review atau cabang tidak valid.",
-    };
-  }
-
+export async function removeMenuReviewAction({
+  reviewId,
+  branchId,
+  branchSlug,
+}: DeleteReviewInput) {
   try {
-    await connectToDatabase();
+    await requireCustomerReviewPermission();
 
-    const menuSlug = await findReviewMenuSlug(reviewId, branchId);
-
-    const deletedReview = await deleteMenuReview(reviewId, branchId);
-
-    if (!deletedReview) {
+    if (!reviewId || !isValidObjectId(reviewId)) {
       return {
         success: false,
-        message: "Review tidak ditemukan pada cabang ini.",
+        message: "ID ulasan tidak valid.",
       };
     }
 
-    revalidateCustomerReviewPaths(branchSlug, menuSlug);
+    if (!branchId || !isValidObjectId(branchId)) {
+      return {
+        success: false,
+        message: "Branch ID tidak valid.",
+      };
+    }
+
+    await connectToDatabase();
+
+    const review = await deleteMenuReview(reviewId, branchId);
+
+    if (!review) {
+      return {
+        success: false,
+        message: "Ulasan tidak ditemukan pada cabang ini.",
+      };
+    }
+
+    revalidateCustomerReviewPaths(branchSlug);
 
     return {
       success: true,
-      message: "Review pelanggan berhasil dihapus.",
+      message: "Ulasan berhasil dihapus.",
     };
   } catch (error) {
     console.error("[removeMenuReviewAction]", error);
 
     return {
       success: false,
-      message: "Gagal menghapus review pelanggan.",
+      message: error instanceof Error ? error.message : "Gagal menghapus ulasan.",
     };
   }
 }
 
-/**
- * Membuat atau mengedit balasan admin.
- *
- * Identitas penjawab diambil dari session login.
- * Frontend tidak dapat menentukan nama maupun role penjawab.
- */
-export async function saveMenuReviewReplyAction(
-  input: MenuReviewReplyInput,
-): Promise<ActionResult> {
-  const permission = await requireCustomerReviewPermission();
+type CreateMenuReviewInput = {
+  menuId: string;
+  branchId: string;
+  branchSlug: string;
+  menuSlug: string;
+  rating: number;
+  comment: string;
+};
 
-  if (!permission.success) {
-    return {
-      success: false,
-      message: permission.message,
-    };
-  }
-
-  const { reviewId, branchId, branchSlug } = input;
-
-  const message = typeof input.message === "string" ? input.message.trim() : "";
-
-  if (!isValidObjectId(reviewId) || !isValidObjectId(branchId) || !isValidBranchSlug(branchSlug)) {
-    return {
-      success: false,
-      message: "Data review atau cabang tidak valid.",
-    };
-  }
-
-  if (!message) {
-    return {
-      success: false,
-      message: "Balasan admin tidak boleh kosong.",
-    };
-  }
-
-  if (message.length > 1000) {
-    return {
-      success: false,
-      message: "Balasan maksimal 1000 karakter.",
-    };
-  }
-
-  const role = permission.session.user.role;
-
-  if (role !== "admin" && role !== "super_admin") {
-    return {
-      success: false,
-      message: "Role akun tidak diizinkan membalas review.",
-    };
-  }
-
-  const repliedByRole: MenuReviewReplyRole = role;
-
-  const repliedByName =
-    permission.session.user.name?.trim() ||
-    (repliedByRole === "super_admin" ? "Owner Kopilogi" : "Admin Kopilogi");
-
+export async function createMenuReviewAction({
+  menuId,
+  branchId,
+  branchSlug,
+  menuSlug,
+  rating,
+  comment,
+}: CreateMenuReviewInput) {
   try {
-    await connectToDatabase();
-
-    const menuSlug = await findReviewMenuSlug(reviewId, branchId);
-
-    if (!menuSlug) {
+    if (!Types.ObjectId.isValid(menuId)) {
       return {
         success: false,
-        message: "Menu terkait review tidak ditemukan.",
+        message: "ID menu tidak valid.",
       };
     }
 
-    const updatedReview = await saveMenuReviewReply(
-      reviewId,
-      branchId,
-      message,
-      repliedByName,
-      repliedByRole,
-    );
-
-    if (!updatedReview) {
+    if (!Types.ObjectId.isValid(branchId)) {
       return {
         success: false,
-        message:
-          "Review tidak ditemukan atau belum disetujui. Hanya review yang disetujui yang dapat dibalas.",
+        message: "ID cabang tidak valid.",
       };
     }
 
-    revalidateCustomerReviewPaths(branchSlug, menuSlug);
-
-    return {
-      success: true,
-      message: "Balasan admin berhasil disimpan.",
-    };
-  } catch (error) {
-    console.error("[saveMenuReviewReplyAction]", error);
-
-    return {
-      success: false,
-      message: "Gagal menyimpan balasan admin.",
-    };
-  }
-}
-
-/**
- * Menghapus balasan admin tanpa menghapus review pelanggan.
- */
-export async function deleteMenuReviewReplyAction(
-  input: BranchReviewInput & { reviewId: string },
-): Promise<ActionResult> {
-  const permission = await requireCustomerReviewPermission();
-
-  if (!permission.success) {
-    return {
-      success: false,
-      message: permission.message,
-    };
-  }
-
-  const { reviewId, branchId, branchSlug } = input;
-
-  if (!isValidObjectId(reviewId) || !isValidObjectId(branchId) || !isValidBranchSlug(branchSlug)) {
-    return {
-      success: false,
-      message: "Data review atau cabang tidak valid.",
-    };
-  }
-
-  try {
-    await connectToDatabase();
-
-    const menuSlug = await findReviewMenuSlug(reviewId, branchId);
-
-    const updatedReview = await deleteMenuReviewReply(reviewId, branchId);
-
-    if (!updatedReview) {
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
       return {
         success: false,
-        message: "Balasan tidak ditemukan pada review ini.",
+        message: "Rating harus antara 1 sampai 5 bintang.",
       };
     }
 
-    revalidateCustomerReviewPaths(branchSlug, menuSlug);
+    if (typeof comment !== "string" || comment.length > 500) {
+      return {
+        success: false,
+        message: "Komentar maksimal 500 karakter.",
+      };
+    }
 
-    return {
-      success: true,
-      message: "Balasan admin berhasil dihapus.",
-    };
-  } catch (error) {
-    console.error("[deleteMenuReviewReplyAction]", error);
-
-    return {
-      success: false,
-      message: "Gagal menghapus balasan admin.",
-    };
-  }
-}
-
-/**
- * Mengirim review baru dari pelanggan.
- */
-export async function createMenuReviewAction(input: CreateMenuReviewInput): Promise<ActionResult> {
-  const { menuId, branchId, branchSlug, menuSlug, rating, comment } = input;
-
-  if (!isValidObjectId(menuId) || !isValidObjectId(branchId) || !isValidBranchSlug(branchSlug)) {
-    return {
-      success: false,
-      message: "Data menu atau cabang tidak valid.",
-    };
-  }
-
-  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
-    return {
-      success: false,
-      message: "Rating harus berupa angka 1 sampai 5.",
-    };
-  }
-
-  const trimmedComment = typeof comment === "string" ? comment.trim() : "";
-
-  if (!trimmedComment) {
-    return {
-      success: false,
-      message: "Komentar review tidak boleh kosong.",
-    };
-  }
-
-  if (trimmedComment.length > 500) {
-    return {
-      success: false,
-      message: "Komentar maksimal 500 karakter.",
-    };
-  }
-
-  if (typeof menuSlug !== "string" || !menuSlug.trim() || menuSlug.length > 200) {
-    return {
-      success: false,
-      message: "Slug menu tidak valid.",
-    };
-  }
-
-  try {
     await connectToDatabase();
 
     const session = await auth();
@@ -528,21 +300,21 @@ export async function createMenuReviewAction(input: CreateMenuReviewInput): Prom
       branchId,
       customerName,
       rating,
-      comment: trimmedComment,
+      comment: comment.trim(),
     });
 
     revalidatePath(`/${branchSlug}/${menuSlug}`);
 
     return {
       success: true,
-      message: "Review berhasil dikirim dan menunggu persetujuan admin.",
+      message: "Ulasan berhasil dikirim dan menunggu persetujuan admin.",
     };
   } catch (error) {
     console.error("[createMenuReviewAction]", error);
 
     return {
       success: false,
-      message: "Gagal mengirim review. Silakan coba kembali.",
+      message: error instanceof Error ? error.message : "Gagal mengirim ulasan. Silakan coba lagi.",
     };
   }
 }
