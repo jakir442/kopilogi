@@ -29,6 +29,7 @@ import {
 import type { BranchDocument } from "@/features/branches/types";
 import { MenuManagement, type MenuData } from "@/features/menu/components/admin/menu-management";
 import { CustomerManagement } from "@/features/customers/components/admin/customer-management";
+import { ContentManagement } from "@/features/content/components/admin/content-management";
 import Image from "next/image";
 
 type HeritageDashboardProps = {
@@ -38,7 +39,7 @@ type HeritageDashboardProps = {
   menus: MenuData[];
   onSignOut: () => Promise<void>;
   isSuperAdmin?: boolean;
-  activeTab?: "dashboard" | "menu" | "customers";
+  activeTab?: "dashboard" | "menu" | "customers" | "content";
 };
 
 type NavigationItem = {
@@ -46,7 +47,7 @@ type NavigationItem = {
   description: string;
   icon: LucideIcon;
   href?: string;
-  tab?: "dashboard" | "menu" | "customers";
+  tab?: "dashboard" | "menu" | "customers" | "content";
 };
 
 const navigationItems: NavigationItem[] = [
@@ -73,8 +74,10 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: "Konten Website",
-    description: "Informasi dan konten cabang",
+    description: "Gallery, event, promosi, dan berita cabang",
     icon: MonitorCog,
+    href: "/admin/cabang-2?tab=content",
+    tab: "content",
   },
   {
     label: "Pengaturan",
@@ -113,7 +116,7 @@ function NavigationLink({
   onNavigate,
 }: {
   item: NavigationItem;
-  activeTab: "dashboard" | "menu" | "customers";
+  activeTab: "dashboard" | "menu" | "customers" | "content";
   onNavigate?: () => void;
 }) {
   const Icon = item.icon;
@@ -258,7 +261,9 @@ export function HeritageDashboard({
       ? "Pengelolaan Menu"
       : activeTab === "customers"
         ? "Pengelolaan Pelanggan"
-        : "Panel Administrasi Cabang 2";
+        : activeTab === "content"
+          ? "Pengelolaan Konten Website"
+          : "Panel Administrasi Cabang 2";
 
   return (
     <div className="min-h-screen bg-[#F5F0E7] text-[#49372A] selection:bg-[#B99A72]/30">
@@ -582,6 +587,12 @@ export function HeritageDashboard({
               branchSlug="cabang-2"
               branchName={branchName}
             />
+          ) : activeTab === "content" ? (
+            <ContentManagement
+              branchId={branch?._id ? String(branch._id) : undefined}
+              branchSlug="cabang-2"
+              branchName={branchName}
+            />
           ) : (
             <>
               {/* =================================================
@@ -791,14 +802,13 @@ export function HeritageDashboard({
                     <h3 className="mt-5 text-lg font-semibold text-[#49372A]">Konten Website</h3>
 
                     <p className="mt-2 text-sm leading-6 text-[#88745F]">
-                      Pengelolaan informasi dan konten cabang akan tersedia pada tahap pengembangan
-                      berikutnya.
+                      Kelola gallery, agenda kegiatan, promosi, komunitas, berita, dan highlight media sosial Waroeng Kopilogi.
                     </p>
 
-                    <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#92795E]">
-                      <span className="h-2 w-2 rounded-full bg-[#A8957E]" />
-                      <span>Dalam pengembangan</span>
-                    </div>
+                    <Link href="/admin/cabang-2?tab=content" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#755339] transition-colors hover:text-[#49372A]">
+                      Buka pengelolaan
+                      <ChevronRight size={16} />
+                    </Link>
                   </motion.article>
                 </motion.section>
 
