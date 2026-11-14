@@ -332,100 +332,148 @@ export function FuturisticDashboard({
           />
         </motion.aside>
 
-        {/* Mobile navigation overlay */}
-        {mobileNavOpen && (
-          <>
-            {/* Backdrop menutup menu saat diklik */}
-            <button
-              type="button"
-              aria-label="Tutup navigasi"
-              tabIndex={-1}
-              onClick={closeMobileNav}
-              className="fixed inset-x-0 bottom-0 top-[72px] z-40 cursor-default bg-black/65 backdrop-blur-[2px] lg:hidden"
-            />
-
-            {/* Panel mempunyai scroll sendiri */}
-            <motion.div
-              id="mobile-navigation"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Navigasi admin cabang"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              className="kopilogi-mobile-nav fixed inset-x-0 bottom-0 top-[72px] z-40 overflow-y-auto overscroll-contain border-t border-white/10 bg-[#151617] shadow-2xl lg:hidden"
-              style={{ WebkitOverflowScrolling: "touch" }}
-            >
-              <div className="mx-auto w-full max-w-xl p-4 sm:p-5">
-                <div className="mb-5">
-                  <Brand compact />
-                </div>
-
-                <p className="mb-3 px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#858D92]">
-                  Navigasi
-                </p>
-
-                <nav aria-label="Navigasi mobile" className="space-y-1.5">
-                  {navItems.map((item, index) => (
-                    <SidebarLink
-                      key={item.label}
-                      {...item}
-                      active={"tab" in item ? item.tab === activeTab : false}
-                      index={String(index + 1).padStart(2, "0")}
-                      onNavigate={closeMobileNav}
-                    />
-                  ))}
-
-                  <SidebarLink label="Pengaturan" icon={Settings2} disabled index="05" />
-                </nav>
-
-                <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#AAB2B6]/15 bg-gradient-to-br from-[#4B5256] to-[#252829]">
-                      <CircleUserRound className="h-5 w-5 text-[#D5DADD]" />
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-[#E1E4E6]">{name}</p>
-                      <p className="mt-1 truncate text-xs text-[#A0A6AA]">{email}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4">
-                    {isSuperAdmin ? (
-                      <Link
-                        href="/admin/super-admin"
-                        onClick={closeMobileNav}
-                        className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#C8D0D4]/15 bg-white/[0.035] px-3 py-3 text-sm font-medium text-[#D0D5D8] transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-                      >
-                        <ArrowLeft className="h-4 w-4" />
-                        Kembali ke Super Admin
-                      </Link>
-                    ) : (
-                      <form action={onSignOut}>
-                        <button
-                          type="submit"
-                          className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-3 text-sm font-medium text-[#D0D5D8] transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-                        >
-                          <LogOut className="h-4 w-4" />
-                          Keluar dari akun
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                </div>
-
-                <p className="pb-4 pt-5 text-center text-[10px] uppercase tracking-[0.12em] text-[#70787D]">
-                  Kopilogi · Cabang 01
-                </p>
-              </div>
-            </motion.div>
-          </>
-        )}
-
         {/* Main content */}
         <section className="min-w-0 lg:pl-[264px] xl:pl-[278px]">
+          {/* SHARED HEADER: selalu tampil di semua tab */}
+          <header className="sticky top-0 z-[60] flex min-h-[72px] items-center justify-between gap-3 border-b border-white/[0.08] bg-[#101112]/95 px-3 py-3 backdrop-blur-2xl sm:px-5 lg:px-7 xl:px-10">
+            <div className="flex min-w-0 items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen((open) => !open)}
+                aria-label={mobileNavOpen ? "Tutup navigasi" : "Buka navigasi"}
+                aria-expanded={mobileNavOpen}
+                aria-controls="mobile-navigation"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] text-[#B8BEC2] transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:hidden"
+              >
+                {mobileNavOpen ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+              </button>
+
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.1em] text-[#8D9397] sm:text-xs sm:tracking-[0.12em]">
+                  <Command className="h-4 w-4 shrink-0 text-[#B5BBBE]" />
+                  <span className="truncate">Kopilogi / Sistem Manajemen</span>
+                </div>
+
+                <div className="mt-1 flex items-center gap-2 text-xs text-[#C8CDCF] sm:text-sm">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D5DADC] opacity-30" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#D5DADC]" />
+                  </span>
+
+                  <span className="truncate">{activePageLabel}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+              <div className="hidden items-center gap-2 rounded-lg border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs text-[#A7ADB1] xl:flex">
+                <Wifi className="h-4 w-4 text-[#D0D5D8]" />
+                Koneksi aman
+              </div>
+
+              <div className="hidden h-8 w-px bg-white/10 sm:block" />
+
+              <div className="hidden max-w-40 text-right sm:block">
+                <p className="truncate text-sm font-medium text-[#E1E4E6]">{name}</p>
+                <p className="mt-0.5 text-xs text-[#8D9397]">Admin Cabang</p>
+              </div>
+
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#A8B0B4]/20 bg-gradient-to-br from-[#5A6064]/50 to-[#252728] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                <CircleUserRound className="h-5 w-5 text-[#D2D7D9]" />
+              </div>
+            </div>
+          </header>
+
+          {/* MOBILE NAVIGATION: tidak bergantung pada activeTab */}
+          {mobileNavOpen && (
+            <>
+              <button
+                type="button"
+                aria-label="Tutup navigasi"
+                onClick={closeMobileNav}
+                className="fixed inset-x-0 bottom-0 top-[72px] z-40 cursor-default bg-black/65 backdrop-blur-[2px] lg:hidden"
+              />
+
+              <motion.div
+                id="mobile-navigation"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Navigasi admin cabang"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="kopilogi-mobile-nav fixed inset-x-0 bottom-0 top-[72px] z-50 overflow-y-auto overscroll-contain border-t border-white/10 bg-[#151617] shadow-2xl lg:hidden"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
+                <div className="mx-auto w-full max-w-xl p-4 sm:p-5">
+                  <div className="mb-5">
+                    <Brand compact />
+                  </div>
+
+                  <p className="mb-3 px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#858D92]">
+                    Navigasi
+                  </p>
+
+                  <nav aria-label="Navigasi mobile" className="space-y-1.5">
+                    {navItems.map((item, index) => (
+                      <SidebarLink
+                        key={item.label}
+                        {...item}
+                        active={"tab" in item ? item.tab === activeTab : false}
+                        index={String(index + 1).padStart(2, "0")}
+                        onNavigate={closeMobileNav}
+                      />
+                    ))}
+
+                    <SidebarLink label="Pengaturan" icon={Settings2} disabled index="05" />
+                  </nav>
+
+                  <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#AAB2B6]/15 bg-gradient-to-br from-[#4B5256] to-[#252829]">
+                        <CircleUserRound className="h-5 w-5 text-[#D5DADD]" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-[#E1E4E6]">{name}</p>
+                        <p className="mt-1 truncate text-xs text-[#A0A6AA]">{email}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      {isSuperAdmin ? (
+                        <Link
+                          href="/admin/super-admin"
+                          onClick={closeMobileNav}
+                          className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#C8D0D4]/15 bg-white/[0.035] px-3 py-3 text-sm font-medium text-[#D0D5D8] transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                        >
+                          <ArrowLeft className="h-4 w-4" />
+                          Kembali ke Super Admin
+                        </Link>
+                      ) : (
+                        <form action={onSignOut}>
+                          <button
+                            type="submit"
+                            className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-3 text-sm font-medium text-[#D0D5D8] transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                          >
+                            <LogOut className="h-4 w-4" />
+                            Keluar dari akun
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="pb-4 pt-5 text-center text-[10px] uppercase tracking-[0.12em] text-[#70787D]">
+                    Kopilogi · Cabang 01
+                  </p>
+                </div>
+              </motion.div>
+            </>
+          )}
+
+          {/* KONTEN HALAMAN: hanya bagian ini yang berubah sesuai tab */}
           {activeTab === "menu" ? (
             <MenuManagement
               initialMenus={menus}
@@ -494,25 +542,35 @@ export function FuturisticDashboard({
             />
           ) : (
             <>
-              {/* Header */}
-              <header className="sticky top-0 z-50 flex min-h-[72px] items-center justify-between gap-3 border-b border-white/[0.08] bg-[#101112]/95 px-3 py-3 backdrop-blur-2xl sm:px-5 lg:px-7 xl:px-10">
-                <div className="flex min-w-0 items-center gap-3">
+              {/* Mobile navigation overlay */}
+              {mobileNavOpen && (
+                <>
+                  {/* Backdrop menutup menu saat diklik */}
                   <button
                     type="button"
-                    onClick={() => setMobileNavOpen((open) => !open)}
-                    aria-label={mobileNavOpen ? "Tutup navigasi" : "Buka navigasi"}
-                    aria-expanded={mobileNavOpen}
-                    aria-controls="mobile-navigation"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] text-[#B8BEC2] transition hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:hidden"
-                  >
-                    {mobileNavOpen ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
-                  </button>
+                    aria-label="Tutup navigasi"
+                    tabIndex={-1}
+                    onClick={closeMobileNav}
+                    className="fixed inset-x-0 bottom-0 top-[72px] z-40 cursor-default bg-black/65 backdrop-blur-[2px] lg:hidden"
+                  />
 
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.1em] text-[#8D9397] sm:text-xs sm:tracking-[0.12em]">
-                      <Command className="h-4 w-4 shrink-0 text-[#B5BBBE]" />
-                      <span className="truncate">Kopilogi / Sistem Manajemen</span>
-                    </div>
+                  {/* Panel mempunyai scroll sendiri */}
+                  <motion.div
+                    id="mobile-navigation"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Navigasi admin cabang"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className="kopilogi-mobile-nav fixed inset-x-0 bottom-0 top-[72px] z-40 overflow-y-auto overscroll-contain border-t border-white/10 bg-[#151617] shadow-2xl lg:hidden"
+                    style={{ WebkitOverflowScrolling: "touch" }}
+                  >
+                    <div className="mx-auto w-full max-w-xl p-4 sm:p-5">
+                      <div className="mb-5">
+                        <Brand compact />
+                      </div>
 
                       <p className="mb-3 px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#858D92]">
                         Navigasi
@@ -536,20 +594,43 @@ export function FuturisticDashboard({
                             <CircleUserRound className="h-5 w-5 text-[#D5DADD]" />
                           </div>
 
-                  <div className="hidden h-8 w-px bg-white/10 sm:block" />
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-[#E1E4E6]">{name}</p>
+                            <p className="mt-1 truncate text-xs text-[#A0A6AA]">{email}</p>
+                          </div>
+                        </div>
 
-                  <div className="hidden max-w-40 text-right sm:block">
-                    <p className="truncate text-sm font-medium text-[#E1E4E6]">{name}</p>
-                    <p className="mt-0.5 text-xs text-[#8D9397]">Admin Cabang</p>
-                  </div>
+                        <div className="mt-4">
+                          {isSuperAdmin ? (
+                            <Link
+                              href="/admin/super-admin"
+                              onClick={closeMobileNav}
+                              className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#C8D0D4]/15 bg-white/[0.035] px-3 py-3 text-sm font-medium text-[#D0D5D8] transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                            >
+                              <ArrowLeft className="h-4 w-4" />
+                              Kembali ke Super Admin
+                            </Link>
+                          ) : (
+                            <form action={onSignOut}>
+                              <button
+                                type="submit"
+                                className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-3 text-sm font-medium text-[#D0D5D8] transition hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                              >
+                                <LogOut className="h-4 w-4" />
+                                Keluar dari akun
+                              </button>
+                            </form>
+                          )}
+                        </div>
+                      </div>
 
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#A8B0B4]/20 bg-gradient-to-br from-[#5A6064]/50 to-[#252728] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                    <CircleUserRound className="h-5 w-5 text-[#D2D7D9]" />
-                  </div>
-
-                  {/* Tidak ada tombol logout kedua di header */}
-                </div>
-              </header>
+                      <p className="pb-4 pt-5 text-center text-[10px] uppercase tracking-[0.12em] text-[#70787D]">
+                        Kopilogi · Cabang 01
+                      </p>
+                    </div>
+                  </motion.div>
+                </>
+              )}
 
               {/* Dashboard body */}
               <motion.div
@@ -777,10 +858,8 @@ export function FuturisticDashboard({
                       index="02"
                       icon={Users}
                       title="Pelanggan"
-                      description="Kelola komentar pelanggan, moderasi ulasan, dan pantau rating pada setiap menu Kopilogi."
-                      href="/admin/cabang-1?tab=customers"
-                      status="Siap digunakan"
-                      active
+                      description="Ruang pengembangan untuk kebutuhan informasi, interaksi, dan pengalaman pelanggan Kopilogi."
+                      status="Dalam pengembangan"
                     />
                   </motion.div>
 
@@ -789,10 +868,8 @@ export function FuturisticDashboard({
                       index="03"
                       icon={MonitorCog}
                       title="Konten Website"
-                      description="Kelola gallery, event, promosi, kolaborasi komunitas, berita, dan highlight media sosial website."
-                      href="/admin/cabang-1?tab=content"
-                      status="Siap digunakan"
-                      active
+                      description="Pengelolaan informasi dan konten cabang akan tersedia pada tahap pengembangan berikutnya."
+                      status="Dalam pengembangan"
                     />
                   </motion.div>
                 </motion.section>
