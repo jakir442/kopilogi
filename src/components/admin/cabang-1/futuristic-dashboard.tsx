@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Activity,
   ArrowLeft,
@@ -8,6 +9,7 @@ import {
   ArrowUpRight,
   Building2,
   Check,
+  CheckCircle2,
   CircleUserRound,
   Coffee,
   Command,
@@ -27,14 +29,17 @@ import {
   Users,
   Wifi,
   X,
+  XCircle,
 } from "lucide-react";
-import { motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import { MenuManagement, type MenuData } from "@/features/menu/components/admin/menu-management";
 import type { BranchDocument } from "@/features/branches/types";
 import Image from "next/image";
 import { CustomerManagement } from "@/features/customers/components/admin/customer-management";
+import { BranchSettings } from "./branch-settings";
+import { updateBranchSettings } from "@/features/branches/actions/branch-settings.actions";
 
 type FuturisticDashboardProps = {
   name: string;
@@ -43,8 +48,13 @@ type FuturisticDashboardProps = {
   menus: MenuData[];
   onSignOut: () => Promise<void>;
   isSuperAdmin?: boolean;
-  activeTab: "dashboard" | "menu" | "customers";
+  activeTab: "dashboard" | "menu" | "customers" | "settings";
 };
+
+type ToastState = {
+  type: "success" | "error";
+  message: string;
+} | null;
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -101,11 +111,39 @@ const navItems = [
     tab: "customers" as const,
   },
   {
+    label: "Pengaturan",
+    icon: Settings2,
+    href: "/admin/cabang-1?tab=settings",
+    tab: "settings" as const,
+  },
+  {
     label: "Konten Website",
     icon: MonitorCog,
     disabled: true,
   },
 ];
+
+/**
+ * Menentukan link Google Maps:
+ * 1. Pakai googleMapsUrl kalau ada (otomatis ditambah https:// bila belum ada)
+ * 2. Kalau kosong, cari lewat alamat cabang
+ * 3. Kalau alamat juga kosong, return null
+ */
+function getMapsHref(branch: BranchDocument | null) {
+  const raw = branch?.googleMapsUrl?.trim();
+
+  if (raw) {
+    return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  }
+
+  const address = branch?.address?.trim();
+
+  if (address) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  }
+
+  return null;
+}
 
 export function FuturisticDashboard({
   name,
@@ -116,10 +154,22 @@ export function FuturisticDashboard({
   isSuperAdmin = false,
   activeTab = "dashboard",
 }: FuturisticDashboardProps) {
+  const router = useRouter();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [toast, setToast] = useState<ToastState>(null);
 
   const firstName = name.trim().split(/\s+/)[0] || "Admin";
   const branchName = branch?.name ?? "Kopilogi Cabang 1";
+  const mapsHref = getMapsHref(branch);
+
+  // Toast hilang otomatis setelah 3,5 detik.
+  useEffect(() => {
+    if (!toast) return;
+
+    const timer = setTimeout(() => setToast(null), 3500);
+
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   // Kunci scroll halaman ketika navigasi mobile terbuka.
   // Panel navigasi memiliki scroll internal sendiri.
@@ -161,6 +211,39 @@ export function FuturisticDashboard({
       animate="visible"
       className="relative min-h-screen overflow-x-clip bg-[#101112] text-[#E7E9EA] selection:bg-white/15 selection:text-white"
     >
+      {/* Toast notifikasi */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            key="toast"
+            role="status"
+            aria-live="polite"
+            initial={{ opacity: 0, y: -16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -16, scale: 0.97 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="fixed right-4 top-4 z-[100] flex max-w-sm items-start gap-3 rounded-xl border border-white/15 bg-[#1A1C1E]/95 px-4 py-3 shadow-2xl backdrop-blur-xl sm:right-6 sm:top-6"
+          >
+            {toast.type === "success" ? (
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+            ) : (
+              <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+            )}
+
+            <p className="text-sm leading-5 text-[#E1E4E6]">{toast.message}</p>
+
+            <button
+              type="button"
+              onClick={() => setToast(null)}
+              aria-label="Tutup notifikasi"
+              className="ml-1 shrink-0 text-[#8D9397] transition hover:text-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Background */}
       <div
         aria-hidden="true"
@@ -214,16 +297,6 @@ export function FuturisticDashboard({
             </nav>
           </div>
 
-          <div className="mt-8 px-4">
-            <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8C9195]">
-              Sistem
-            </p>
-
-            <div className="mt-3">
-              <SidebarLink label="Pengaturan" icon={Settings2} disabled index="05" />
-            </div>
-          </div>
-
           <div className="mt-auto p-4">
             <div className="relative overflow-hidden rounded-xl border border-[#AEB5B9]/15 bg-gradient-to-br from-[#303335]/80 to-[#191A1B]/80 p-4">
               <div className="absolute -right-5 -top-7 h-24 w-24 rounded-full border border-white/[0.07]" />
@@ -269,6 +342,60 @@ export function FuturisticDashboard({
               branchId={branch?._id ? String(branch._id) : undefined}
               branchSlug="cabang-1"
               branchName={branchName}
+            />
+          ) : activeTab === "settings" ? (
+            <BranchSettings
+              initialData={{
+                name: branch?.name ?? "",
+                address: branch?.address ?? "",
+                phone: branch?.phone ?? "",
+                googleMapsUrl: branch?.googleMapsUrl ?? "",
+                openingHours: branch?.openingHours ?? "",
+              }}
+              onSave={async (values) => {
+                if (!branch) {
+                  const failed = {
+                    success: false,
+                    message: "Data cabang tidak ditemukan.",
+                  };
+
+                  setToast({ type: "error", message: failed.message });
+
+                  return failed;
+                }
+
+                try {
+                  const result = await updateBranchSettings({
+                    slug: branch.slug,
+                    ...values,
+                  });
+
+                  if (result.success) {
+                    setToast({
+                      type: "success",
+                      message: result.message || "Perubahan berhasil disimpan.",
+                    });
+                    // Muat ulang data server supaya kartu Informasi Cabang ikut berubah.
+                    router.refresh();
+                  } else {
+                    setToast({
+                      type: "error",
+                      message: result.message || "Gagal menyimpan perubahan.",
+                    });
+                  }
+
+                  return result;
+                } catch {
+                  const failed = {
+                    success: false,
+                    message: "Terjadi kesalahan saat menyimpan. Coba lagi.",
+                  };
+
+                  setToast({ type: "error", message: failed.message });
+
+                  return failed;
+                }
+              }}
             />
           ) : (
             <>
@@ -367,8 +494,6 @@ export function FuturisticDashboard({
                             onNavigate={closeMobileNav}
                           />
                         ))}
-
-                        <SidebarLink label="Pengaturan" icon={Settings2} disabled index="05" />
                       </nav>
 
                       <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
@@ -528,11 +653,11 @@ export function FuturisticDashboard({
                           <ArrowUpRight className="h-4 w-4 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
                         </Link>
 
-                        {branch?.googleMapsUrl ? (
+                        {mapsHref ? (
                           <a
-                            href={branch.googleMapsUrl}
+                            href={mapsHref}
                             target="_blank"
-                            rel="noreferrer"
+                            rel="noopener noreferrer"
                             className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/[0.13] bg-white/[0.035] px-4 py-3 text-sm font-medium text-[#D0D5D8] transition duration-300 hover:border-white/25 hover:bg-white/[0.07] sm:px-5 sm:py-3.5"
                           >
                             Lihat Lokasi
@@ -668,8 +793,8 @@ export function FuturisticDashboard({
                     variants={itemVariants}
                     className="relative overflow-hidden rounded-2xl border border-white/[0.09] bg-gradient-to-br from-[#25282A]/90 to-[#171819]/95 p-5 sm:p-6 lg:p-7"
                   >
-                    <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full border border-white/[0.045]" />
-                    <div className="absolute -right-2 -top-2 h-24 w-24 rounded-full border border-white/[0.06]" />
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full border border-white/[0.045]" />
+                    <div className="pointer-events-none absolute -right-2 -top-2 h-24 w-24 rounded-full border border-white/[0.06]" />
 
                     <div className="relative flex items-start justify-between gap-4">
                       <div className="min-w-0">
@@ -687,9 +812,25 @@ export function FuturisticDashboard({
                         </p>
                       </div>
 
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#AAB1B5]/15 bg-[#AAB1B5]/[0.06] sm:h-11 sm:w-11">
-                        <MapPin className="h-5 w-5 text-[#C1C6C9]" />
-                      </div>
+                      {mapsHref ? (
+                        <a
+                          href={mapsHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Buka lokasi di Google Maps"
+                          aria-label="Buka lokasi di Google Maps"
+                          className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#AAB1B5]/15 bg-[#AAB1B5]/[0.06] transition hover:border-[#AAB1B5]/40 hover:bg-[#AAB1B5]/15 sm:h-11 sm:w-11"
+                        >
+                          <MapPin className="h-5 w-5 text-[#C1C6C9]" />
+                        </a>
+                      ) : (
+                        <div
+                          title="Lokasi belum diatur"
+                          className="relative z-10 flex h-10 w-10 shrink-0 cursor-not-allowed items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.02] opacity-50 sm:h-11 sm:w-11"
+                        >
+                          <MapPin className="h-5 w-5 text-[#C1C6C9]" />
+                        </div>
+                      )}
                     </div>
 
                     <div className="relative mt-5 grid gap-4 border-t border-white/[0.08] pt-5 sm:grid-cols-2">
@@ -702,11 +843,11 @@ export function FuturisticDashboard({
                       <DetailItem label="ID Ruang Kerja" value="KLG / BR-01" />
                     </div>
 
-                    {branch?.googleMapsUrl && (
+                    {mapsHref && (
                       <a
-                        href={branch.googleMapsUrl}
+                        href={mapsHref}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="relative mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#D9DEE1] transition hover:text-white"
                       >
                         Buka lokasi di Google Maps
