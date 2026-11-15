@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import { Branch } from "@/features/branches/models/branch.model";
 import { User } from "@/features/users/models/user.model";
-import type { BranchConcept, BranchDocument } from "@/features/branches/types";
+import type { BranchConcept, BranchDocument, WeeklyOpeningHours } from "@/features/branches/types";
 import type { AppRole } from "./authorization";
 
 export type AdminBranchAccess = {
@@ -12,6 +12,24 @@ export type AdminBranchAccess = {
   branch: BranchDocument | null;
   concept: BranchConcept | null;
 };
+
+function readBranchExtras(branch: object) {
+  const extra = branch as unknown as {
+    openingTime?: string | null;
+    closingTime?: string | null;
+    weeklyOpeningHours?: WeeklyOpeningHours | null;
+    partnerships?: { name?: string | null; url?: string | null }[] | null;
+  };
+
+  return {
+    openingTime: extra.openingTime || undefined,
+    closingTime: extra.closingTime || undefined,
+    weeklyOpeningHours: extra.weeklyOpeningHours ?? undefined,
+    partnerships: (extra.partnerships ?? []).flatMap((partner) =>
+      partner?.name ? [{ name: partner.name, url: partner.url || undefined }] : [],
+    ),
+  };
+}
 
 export async function getAdminBranchAccess(requestedSlug?: string): Promise<AdminBranchAccess> {
   const session = await auth();
@@ -71,7 +89,7 @@ export async function getAdminBranchAccess(requestedSlug?: string): Promise<Admi
         address: branch.address,
         phone: branch.phone ?? undefined,
         googleMapsUrl: branch.googleMapsUrl ?? undefined,
-        openingHours: branch.openingHours ?? undefined,
+        ...readBranchExtras(branch),
         image: branch.image ?? undefined,
         isActive: branch.isActive,
         createdAt: new Date(branch.createdAt),
@@ -147,6 +165,7 @@ export async function getAdminBranchAccess(requestedSlug?: string): Promise<Admi
       phone: branch.phone ?? undefined,
       googleMapsUrl: branch.googleMapsUrl ?? undefined,
       openingHours: branch.openingHours ?? undefined,
+      ...readBranchExtras(branch),
       image: branch.image ?? undefined,
       isActive: branch.isActive,
       createdAt: new Date(branch.createdAt),

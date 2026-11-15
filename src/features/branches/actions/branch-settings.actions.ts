@@ -1,4 +1,3 @@
-
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -19,8 +18,12 @@ export type BranchSettingsResult = {
   errors?: Record<string, string[]>;
 };
 
+type UpdateBranchSettingsInput = BranchSettingsInput & {
+  slug: string;
+};
+
 export async function updateBranchSettings(
-  input: BranchSettingsInput,
+  input: UpdateBranchSettingsInput,
 ): Promise<BranchSettingsResult> {
   try {
     const session = await auth();
@@ -42,26 +45,7 @@ export async function updateBranchSettings(
       };
     }
 
-    const validation = branchSettingsSchema.safeParse(input);
-
-    if (!validation.success) {
-      return {
-        success: false,
-        message: "Data pengaturan cabang tidak valid.",
-        errors: validation.error.flatten().fieldErrors,
-      };
-    }
-
-    const {
-      slug,
-      name,
-      address,
-      phone,
-      googleMapsUrl,
-      openingHours,
-    } = validation.data;
-
-    const access = await getAdminBranchAccess(slug);
+    const access = await getAdminBranchAccess(input.slug);
 
     if (!access.branch) {
       return {
@@ -70,17 +54,58 @@ export async function updateBranchSettings(
       };
     }
 
+    // [DEBUG] input mentah dari form, sebelum Zod
+    console.log(
+      "[SETTINGS] input mentah weeklyOpeningHours:",
+      JSON.stringify(
+        (input as { weeklyOpeningHours?: unknown }).weeklyOpeningHours,
+      ),
+    );
+
+    const validation = branchSettingsSchema.safeParse(input);
+
+    if (!validation.success) {
+      console.log(
+        "[SETTINGS] validasi Zod GAGAL:",
+        JSON.stringify(validation.error.flatten().fieldErrors),
+      );
+      return {
+        success: false,
+        message: "Data pengaturan cabang tidak valid.",
+        errors: validation.error.flatten().fieldErrors as Record<
+          string,
+          string[]
+        >,
+      };
+    }
+
+    const {
+      phone,
+      googleMapsUrl,
+      weeklyOpeningHours,
+      partnerships,
+    } = validation.data;
+
+    // [DEBUG] setelah Zod
+    console.log(
+      "[SETTINGS] weeklyOpeningHours setelah Zod:",
+      JSON.stringify(weeklyOpeningHours),
+    );
+    console.log(
+      "[SETTINGS] schema Mongoose punya field ini?:",
+      Boolean(Branch.schema.path("weeklyOpeningHours")),
+    );
+
     await connectToDatabase();
 
     const updatedBranch = await Branch.findByIdAndUpdate(
       access.branch._id,
       {
         $set: {
-          name,
-          address,
           phone: phone || null,
           googleMapsUrl: googleMapsUrl || null,
-          openingHours: openingHours || null,
+          weeklyOpeningHours,
+          partnerships,
         },
       },
       {
@@ -88,7 +113,9 @@ export async function updateBranchSettings(
         runValidators: true,
       },
     )
-      .select("_id name slug address phone googleMapsUrl openingHours")
+      .select(
+        "_id name slug address phone googleMapsUrl weeklyOpeningHours partnerships",
+      )
       .lean()
       .exec();
 
@@ -99,19 +126,28 @@ export async function updateBranchSettings(
       };
     }
 
-    revalidatePath(`/admin/${slug}`);
-    revalidatePath(`/admin/${slug}/settings`);
+    // [DEBUG] hasil yang benar-benar tersimpan di DB
+    console.log(
+      "[SETTINGS] hasil tersimpan di DB:",
+      JSON.stringify(
+        (updatedBranch as { weeklyOpeningHours?: unknown }).weeklyOpeningHours,
+      ),
+    );
+    console.log("[SETTINGS] _id yang diupdate:", String(updatedBranch._id));
+
+    revalidatePath(`/admin/${input.slug}`);
+    revalidatePath(`/admin/${input.slug}/settings`);
 
     return {
       success: true,
-      message: "Informasi cabang berhasil diperbarui.",
+      message: "Pengaturan cabang berhasil diperbarui.",
     };
   } catch (error: unknown) {
     console.error("updateBranchSettings error:", error);
 
     return {
       success: false,
-      message: "Gagal memperbarui informasi cabang. Silakan coba lagi.",
+      message: "Gagal memperbarui pengaturan cabang. Silakan coba lagi.",
     };
   }
 }
