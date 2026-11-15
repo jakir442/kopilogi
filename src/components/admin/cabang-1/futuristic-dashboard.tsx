@@ -34,12 +34,16 @@ import type { BranchDocument } from "@/features/branches/types";
 import Image from "next/image";
 import { CustomerManagement } from "@/features/customers/components/admin/customer-management";
 import { ContentManagement } from "@/features/content/components/admin/content-management";
+<<<<<<< HEAD
 import {
   BranchSettings,
   type BranchSettingsResult,
   type BranchSettingsValues,
   type WeeklyOpeningHours,
 } from "./branch-settings";
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
 type FuturisticDashboardProps = {
   name: string;
   email: string;
@@ -47,6 +51,7 @@ type FuturisticDashboardProps = {
   menus: MenuData[];
   onSignOut: () => Promise<void>;
   isSuperAdmin?: boolean;
+<<<<<<< HEAD
   activeTab: "dashboard" | "menu" | "customers" | "content" | "settings";
   onSaveSettings?: (values: BranchSettingsValues) => Promise<BranchSettingsResult>;
 };
@@ -61,6 +66,11 @@ type BranchExtras = {
   partnerships?: PartnerLink[];
 };
 type BranchView = BranchDocument & BranchExtras;
+=======
+  activeTab: "dashboard" | "menu" | "customers" | "content";
+};
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
 const ease = [0.22, 1, 0.36, 1] as const;
 function normalizeExternalUrl(raw?: string | null): string | null {
   const value = raw?.trim();
@@ -233,6 +243,10 @@ const navItems = [
     tab: "content" as const,
   },
 ];
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
 export function FuturisticDashboard({
   name,
   email,
@@ -244,6 +258,7 @@ export function FuturisticDashboard({
   onSaveSettings,
 }: FuturisticDashboardProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+<<<<<<< HEAD
   const [currentTime, setCurrentTime] = useState(() => new Date());
   const [showAllSchedule, setShowAllSchedule] = useState(false);
 
@@ -279,6 +294,14 @@ export function FuturisticDashboard({
       name: partner.name.trim(),
       url: normalizeExternalUrl(partner.url),
     }));
+=======
+
+  const firstName = name.trim().split(/\s+/)[0] || "Admin";
+  const branchName = branch?.name ?? "Kopilogi Cabang 1";
+
+  // Kunci scroll halaman ketika navigasi mobile terbuka.
+  // Panel navigasi memiliki scroll internal sendiri.
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
   useEffect(() => {
     if (!mobileNavOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -356,10 +379,15 @@ export function FuturisticDashboard({
               ))}
             </nav>
           </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
           <div className="mt-8 px-4">
             <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8C9195]">
               Sistem
             </p>
+<<<<<<< HEAD
             <div className="mt-3">
               <SidebarLink
               label="Pengaturan"
@@ -370,6 +398,14 @@ export function FuturisticDashboard({
                 />
             </div>
           </div>
+=======
+
+            <div className="mt-3">
+              <SidebarLink label="Pengaturan" icon={Settings2} disabled index="05" />
+            </div>
+          </div>
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
           <div className="mt-auto p-4">
             <div className="relative overflow-hidden rounded-xl border border-[#AEB5B9]/15 bg-gradient-to-br from-[#303335]/80 to-[#191A1B]/80 p-4">
               <div className="absolute -right-5 -top-7 h-24 w-24 rounded-full border border-white/[0.07]" />
@@ -397,6 +433,10 @@ export function FuturisticDashboard({
             isSuperAdmin={isSuperAdmin}
           />
         </motion.aside>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
         {/* Mobile navigation overlay */}
         {mobileNavOpen && (
           <>
@@ -408,6 +448,10 @@ export function FuturisticDashboard({
               onClick={closeMobileNav}
               className="fixed inset-x-0 bottom-0 top-[72px] z-40 cursor-default bg-black/65 backdrop-blur-[2px] lg:hidden"
             />
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
             {/* Panel mempunyai scroll sendiri */}
             <motion.div
               id="mobile-navigation"
@@ -425,9 +469,17 @@ export function FuturisticDashboard({
                 <div className="mb-5">
                   <Brand compact />
                 </div>
+<<<<<<< HEAD
                 <p className="mb-3 px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#858D92]">
                   Navigasi
                 </p>
+=======
+
+                <p className="mb-3 px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#858D92]">
+                  Navigasi
+                </p>
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                 <nav aria-label="Navigasi mobile" className="space-y-1.5">
                   {navItems.map((item, index) => (
                     <SidebarLink
@@ -438,6 +490,7 @@ export function FuturisticDashboard({
                       onNavigate={closeMobileNav}
                     />
                   ))}
+<<<<<<< HEAD
                   <SidebarLink
                     label="Pengaturan"
                     icon={Settings2}
@@ -447,16 +500,30 @@ export function FuturisticDashboard({
                     onNavigate={closeMobileNav}
                   />
                 </nav>
+=======
+
+                  <SidebarLink label="Pengaturan" icon={Settings2} disabled index="05" />
+                </nav>
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                 <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#AAB2B6]/15 bg-gradient-to-br from-[#4B5256] to-[#252829]">
                       <CircleUserRound className="h-5 w-5 text-[#D5DADD]" />
                     </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-[#E1E4E6]">{name}</p>
                       <p className="mt-1 truncate text-xs text-[#A0A6AA]">{email}</p>
                     </div>
                   </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                   <div className="mt-4">
                     {isSuperAdmin ? (
                       <Link
@@ -480,6 +547,10 @@ export function FuturisticDashboard({
                     )}
                   </div>
                 </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                 <p className="pb-4 pt-5 text-center text-[10px] uppercase tracking-[0.12em] text-[#70787D]">
                   Kopilogi · Cabang 01
                 </p>
@@ -487,6 +558,10 @@ export function FuturisticDashboard({
             </motion.div>
           </>
         )}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
         {/* Main content */}
         <section className="min-w-0 lg:pl-[264px] xl:pl-[278px]">
           {activeTab === "menu" ? (
@@ -507,6 +582,7 @@ export function FuturisticDashboard({
               branchSlug="cabang-1"
               branchName={branchName}
               onToggleMobileNav={() => setMobileNavOpen((open) => !open)}
+<<<<<<< HEAD
             />
           ) : activeTab === "settings" ? (
             <BranchSettings
@@ -526,6 +602,8 @@ export function FuturisticDashboard({
               onSave={onSaveSettings}
               onToggleMobileNav={() => setMobileNavOpen((open) => !open)}
               mobileNavOpen={mobileNavOpen}
+=======
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
             />
           ) : (
             <>
@@ -542,11 +620,19 @@ export function FuturisticDashboard({
                   >
                     {mobileNavOpen ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
                   </button>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.1em] text-[#8D9397] sm:text-xs sm:tracking-[0.12em]">
                       <Command className="h-4 w-4 shrink-0 text-[#B5BBBE]" />
                       <span className="truncate">Kopilogi / Sistem Manajemen</span>
                     </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                     <div className="mt-1 flex items-center gap-2 text-xs text-[#C8CDCF] sm:text-sm">
                       <span className="relative flex h-2 w-2 shrink-0">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D5DADC] opacity-30" />
@@ -556,22 +642,44 @@ export function FuturisticDashboard({
                     </div>
                   </div>
                 </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                 <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                   <div className="hidden items-center gap-2 rounded-lg border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs text-[#A7ADB1] xl:flex">
                     <Wifi className="h-4 w-4 text-[#D0D5D8]" />
                     Koneksi aman
                   </div>
+<<<<<<< HEAD
                   <div className="hidden h-8 w-px bg-white/10 sm:block" />
+=======
+
+                  <div className="hidden h-8 w-px bg-white/10 sm:block" />
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                   <div className="hidden max-w-40 text-right sm:block">
                     <p className="truncate text-sm font-medium text-[#E1E4E6]">{name}</p>
                     <p className="mt-0.5 text-xs text-[#8D9397]">Admin Cabang</p>
                   </div>
+<<<<<<< HEAD
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#A8B0B4]/20 bg-gradient-to-br from-[#5A6064]/50 to-[#252728] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
                     <CircleUserRound className="h-5 w-5 text-[#D2D7D9]" />
                   </div>
                   {/* Tidak ada tombol logout kedua di header */}
                 </div>
               </header>
+=======
+
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#A8B0B4]/20 bg-gradient-to-br from-[#5A6064]/50 to-[#252728] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                    <CircleUserRound className="h-5 w-5 text-[#D2D7D9]" />
+                  </div>
+
+                  {/* Tidak ada tombol logout kedua di header */}
+                </div>
+              </header>
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
               {/* Dashboard body */}
               <motion.div
                 variants={containerVariants}
@@ -669,11 +777,18 @@ export function FuturisticDashboard({
                           Kelola Menu
                           <ArrowUpRight className="h-4 w-4 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
                         </Link>
+<<<<<<< HEAD
                         {mapsUrl ? (
                           <a
                             href={mapsUrl}
+=======
+
+                        {branch?.googleMapsUrl ? (
+                          <a
+                            href={branch.googleMapsUrl}
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel="noreferrer"
                             className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/[0.13] bg-white/[0.035] px-4 py-3 text-sm font-medium text-[#D0D5D8] transition duration-300 hover:border-white/25 hover:bg-white/[0.07] sm:px-5 sm:py-3.5"
                           >
                             Lihat Lokasi
@@ -801,8 +916,14 @@ export function FuturisticDashboard({
                     variants={itemVariants}
                     className="relative overflow-hidden rounded-2xl border border-white/[0.09] bg-gradient-to-br from-[#25282A]/90 to-[#171819]/95 p-5 sm:p-6 lg:p-7"
                   >
+<<<<<<< HEAD
                     <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full border border-white/[0.045]" />
                     <div className="pointer-events-none absolute -right-2 -top-2 h-24 w-24 rounded-full border border-white/[0.06]" />
+=======
+                    <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full border border-white/[0.045]" />
+                    <div className="absolute -right-2 -top-2 h-24 w-24 rounded-full border border-white/[0.06]" />
+
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                     <div className="relative flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.15em] text-[#A0A6AA] sm:text-xs">
@@ -816,6 +937,7 @@ export function FuturisticDashboard({
                           {branch?.address ?? "Informasi alamat cabang belum tersedia."}
                         </p>
                       </div>
+<<<<<<< HEAD
                       {mapsUrl ? (
                         <a
                           href={mapsUrl}
@@ -835,6 +957,12 @@ export function FuturisticDashboard({
                           <MapPin className="h-5 w-5 text-[#C1C6C9]" />
                         </div>
                       )}
+=======
+
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#AAB1B5]/15 bg-[#AAB1B5]/[0.06] sm:h-11 sm:w-11">
+                        <MapPin className="h-5 w-5 text-[#C1C6C9]" />
+                      </div>
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                     </div>
                     <div className="relative mt-5 grid gap-4 border-t border-white/[0.08] pt-5 sm:grid-cols-2">
                       <DetailItem label="Konsep Cabang" value="Modern Futuristik" />
@@ -863,6 +991,7 @@ export function FuturisticDashboard({
                       <DetailItem label="ID Ruang Kerja" value="KLG / BR-01" />
                     </div>
 
+<<<<<<< HEAD
                     {branchView?.weeklyOpeningHours && (
                       <div className="relative mt-5 border-t border-white/[0.08] pt-5">
                         <div className="flex items-center justify-between gap-3">
@@ -950,8 +1079,13 @@ export function FuturisticDashboard({
                     {mapsUrl && (
                       <a
                         href={mapsUrl}
+=======
+                    {branch?.googleMapsUrl && (
+                      <a
+                        href={branch.googleMapsUrl}
+>>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noreferrer"
                         className="relative mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#D9DEE1] transition hover:text-white"
                       >
                         Buka lokasi di Google Maps
