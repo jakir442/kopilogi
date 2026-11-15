@@ -1,26 +1,82 @@
 
 import { z } from "zod";
 
-export const branchSettingsSchema = z.object({
-  slug: z.string().trim().min(1, "Slug cabang wajib diisi."),
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
+function normalizeHttpUrl(raw: string): string | null {
+  const value = raw.trim();
+
+  if (!value) return null;
+
+  const withProtocol = /^https?:\/\//i.test(value)
+    ? value
+    : `https://${value}`;
+
+  try {
+    const url = new URL(withProtocol);
+
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+const optionalHttpUrl = z
+  .string()
+  .trim()
+  .max(500, "URL terlalu panjang.")
+  .refine(
+    (value) => value === "" || normalizeHttpUrl(value) !== null,
+    "URL tidak valid. Gunakan alamat yang diawali http:// atau https://.",
+  )
+  .transform((value) =>
+    value === "" ? "" : normalizeHttpUrl(value) as string
+  );
+
+const dailyOpeningHoursSchema = z
+  .object({
+    isOpen: z.boolean(),
+    open: z.string().regex(TIME_PATTERN, "Format jam buka tidak valid."),
+    close: z.string().regex(TIME_PATTERN, "Format jam tutup tidak valid."),
+  })
+  .refine(
+    (data) => !data.isOpen || data.open !== data.close,
+    {
+      message: "Jam buka dan jam tutup tidak boleh sama.",
+      path: ["close"],
+    },
+  );
+
+export const weeklyOpeningHoursSchema = z.object({
+  monday: dailyOpeningHoursSchema,
+  tuesday: dailyOpeningHoursSchema,
+  wednesday: dailyOpeningHoursSchema,
+  thursday: dailyOpeningHoursSchema,
+  friday: dailyOpeningHoursSchema,
+  saturday: dailyOpeningHoursSchema,
+  sunday: dailyOpeningHoursSchema,
+});
+
+const partnershipSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "Nama cabang minimal 2 karakter.")
-    .max(100, "Nama cabang maksimal 100 karakter."),
+    .min(1, "Nama media kerja sama wajib diisi.")
+    .max(60, "Nama media kerja sama maksimal 60 karakter."),
+  url: optionalHttpUrl,
+});
 
-  address: z
-    .string()
-    .trim()
-    .min(1, "Alamat cabang wajib diisi.")
-    .max(500, "Alamat maksimal 500 karakter."),
-
+export const branchSettingsSchema = z.object({
   phone: z
     .string()
     .trim()
     .max(30, "Nomor telepon maksimal 30 karakter.")
-    .optional()
+    .regex(
+      /^[0-9+\-\s()]*$/,
+      "Nomor telepon hanya boleh berisi angka, spasi, +, -, dan tanda kurung.",
+    )
     .default(""),
 
   googleMapsUrl: z
@@ -31,17 +87,17 @@ export const branchSettingsSchema = z.object({
       (value) => value === "" || /^https:\/\/\S+$/i.test(value),
       "URL Google Maps harus menggunakan HTTPS.",
     )
-    .optional()
     .default(""),
 
-  openingHours: z
-    .string()
-    .trim()
-    .max(200, "Jam operasional maksimal 200 karakter.")
-    .optional()
-    .default(""),
+  weeklyOpeningHours: weeklyOpeningHoursSchema,
+
+  partnerships: z
+    .array(partnershipSchema)
+    .max(10, "Maksimal 10 media kerja sama."),
 });
 
-export type BranchSettingsInput = z.infer<
-  typeof branchSettingsSchema
->;
+export type BranchSettingsData = z.output<typeof branchSettingsSchema>;
+export type BranchSettingsInput = z.input<typeof branchSettingsSchema>;
+
+export type WeeklyOpeningHours = z.infer<typeof weeklyOpeningHoursSchema>;
+export type DailyOpeningHours = z.infer<typeof dailyOpeningHoursSchema>;

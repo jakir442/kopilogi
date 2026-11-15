@@ -28,6 +28,7 @@ import Image from "next/image";
 
 import { MenuManagement, type MenuData } from "@/features/menu/components/admin/menu-management";
 import { CustomerManagement } from "@/features/customers/components/admin/customer-management";
+import { ContentManagement } from "@/features/content/components/admin/content-management";
 import type { BranchDocument } from "@/features/branches/types";
 
 type AdminTab = "dashboard" | "menu" | "customers" | "content" | "settings";
@@ -380,12 +381,15 @@ export function CozyDashboard({
 
     if (activeTab === "content") {
       return (
-        <ComingSoonSection
-          icon={Globe2}
-          eyebrow="Web Content"
-          title="Konten Web"
-          description={`Kelola konten website untuk ${branchName}, termasuk informasi cabang, konten promosi, dan informasi yang ditampilkan kepada pelanggan.`}
-        />
+        <div className="min-h-screen bg-[#F4F3EF]">
+          <div className="mx-auto w-full max-w-[1600px]">
+            <ContentManagement
+              branchId={branch?._id ? String(branch._id) : undefined}
+              branchSlug="cabang-4"
+              branchName={branchName}
+            />
+          </div>
+        </div>
       );
     }
 
@@ -826,7 +830,22 @@ export function CozyDashboard({
       {/* Mobile header */}
       <header className="sticky top-0 z-30 border-b border-black/[0.07] bg-white/90 backdrop-blur-xl lg:hidden">
         <div className="flex h-16 items-center justify-between gap-3 px-4">
-          {/* Hamburger di kiri */}
+          <Link
+            href="/admin/cabang-4"
+            onClick={closeMobileMenu}
+            className="flex min-w-0 items-center gap-3"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-neutral-950 text-white">
+              <Coffee className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold tracking-wide">KOPILOGI</p>
+              <p className="text-[9px] uppercase tracking-[0.16em] text-neutral-400">
+                Tasik · Branch 04
+              </p>
+            </div>
+          </Link>
+
           <button
             type="button"
             onClick={() => setMobileOpen((current) => !current)}
@@ -837,30 +856,6 @@ export function CozyDashboard({
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
           </button>
-
-          {/* Identitas Kopilogi di kanan */}
-          <Link
-            href="/admin/cabang-4"
-            onClick={closeMobileMenu}
-            className="flex min-w-0 items-center gap-3 text-right"
-          >
-            <div className="min-w-0">
-              <p className="text-sm font-semibold tracking-wide text-neutral-950">KOPILOGI</p>
-              <p className="text-[9px] uppercase tracking-[0.16em] text-neutral-400">
-                Tasik · Branch 04
-              </p>
-            </div>
-
-            <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
-              <Image
-                src="/logo/kopilogi-no-bg.png"
-                alt="Logo Kopilogi"
-                fill
-                sizes="36px"
-                className="object-contain p-0.5"
-              />
-            </div>
-          </Link>
         </div>
       </header>
 
@@ -883,11 +878,11 @@ export function CozyDashboard({
               role="dialog"
               aria-modal="true"
               aria-label="Menu navigasi Cabang 4"
-              initial={{ opacity: 0, x: "-100%" }}
+              initial={{ opacity: 0, x: "100%" }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: "-100%" }}
+              exit={{ opacity: 0, x: "100%" }}
               transition={{ duration: 0.24, ease: "easeOut" }}
-              className="cozy-sidebar-scroll fixed inset-y-0 left-0 z-50 flex w-[min(88vw,360px)] flex-col overflow-y-auto overscroll-contain bg-[#111111] text-white shadow-2xl lg:hidden"
+              className="cozy-sidebar-scroll fixed inset-y-0 right-0 z-50 flex w-[min(88vw,360px)] flex-col overflow-y-auto overscroll-contain bg-[#111111] text-white shadow-2xl lg:hidden"
             >
               <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/[0.08] px-5">
                 <Brand mobile />

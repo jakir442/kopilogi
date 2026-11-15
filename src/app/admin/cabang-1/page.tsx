@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
@@ -5,11 +6,14 @@ import { signOut } from "@/auth";
 import { requireAdmin } from "@/lib/auth/authorization";
 import { getAdminBranchAccess } from "@/lib/auth/branch-access";
 import { FuturisticDashboard } from "@/components/admin/cabang-1/futuristic-dashboard";
+import type { BranchSettingsValues } from "@/components/admin/cabang-1/branch-settings";
 import { getMenus } from "@/features/menu/actions/menu.actions";
+import { updateBranchSettings } from "@/features/branches/actions/branch-settings.actions";
 
 export const metadata: Metadata = {
   title: "Cabang 1 | Admin Kopilogi",
-  description: "Dashboard dan manajemen menu Kopilogi Cabang 1.",
+  description:
+    "Dashboard, menu, pelanggan, dan konten website Kopilogi Cabang 1.",
 };
 
 async function handleSignOut() {
@@ -26,30 +30,54 @@ type Cabang1AdminPageProps = {
   }>;
 };
 
-export default async function Cabang1AdminPage({ searchParams }: Cabang1AdminPageProps) {
+export default async function Cabang1AdminPage({
+  searchParams,
+}: Cabang1AdminPageProps) {
   const session = await requireAdmin();
   const access = await getAdminBranchAccess("cabang-1");
+  
+  console.log(
+  "DATA BRANCH DARI SERVER:",
+  access.branch.weeklyOpeningHours,
+);
 
   if (!access.branch) {
     redirect("/admin");
   }
 
-  if (session.user.role !== "super_admin" && access.branch.slug !== "cabang-1") {
+  if (
+    session.user.role !== "super_admin" &&
+    access.branch.slug !== "cabang-1"
+  ) {
     redirect("/admin");
   }
 
   const params = await searchParams;
+
   const activeTab =
-    params.tab === "menu" 
-      ? "menu" 
-      : params.tab === "customers" 
-        ? "customers" 
-        : params.tab === "settings"
-          ? "settings"
-          : "dashboard";
+    params.tab === "menu"
+      ? "menu"
+      : params.tab === "customers"
+        ? "customers"
+        : params.tab === "content"
+          ? "content"
+          : params.tab === "settings"
+            ? "settings"
+            : "dashboard";
 
   const menuResult = await getMenus(String(access.branch._id));
   const menus = menuResult.success ? (menuResult.data ?? []) : [];
+
+  const branchSlug = access.branch.slug;
+
+  async function saveBranchSettings(values: BranchSettingsValues) {
+    "use server";
+
+    return updateBranchSettings({
+      slug: branchSlug,
+      ...values,
+    });
+  }
 
   return (
     <FuturisticDashboard
@@ -60,6 +88,7 @@ export default async function Cabang1AdminPage({ searchParams }: Cabang1AdminPag
       onSignOut={handleSignOut}
       isSuperAdmin={session.user.role === "super_admin"}
       activeTab={activeTab}
+      onSaveSettings={saveBranchSettings}
     />
   );
 }

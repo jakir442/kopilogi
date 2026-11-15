@@ -14,7 +14,6 @@ import {
   ExternalLink,
   LayoutDashboard,
   LogOut,
-  MapPin,
   Menu as MenuIcon,
   MonitorCog,
   Settings2,
@@ -26,9 +25,20 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import type { BranchDocument } from "@/features/branches/types";
+import type { BranchDocument, WeeklyOpeningHours } from "@/features/branches/types";
+import {
+  WEEK_DAYS,
+  getOpeningStatus,
+  getTodayKey,
+  resolveSchedule,
+} from "@/features/branches/lib/opening-hours";
+import {
+  HeritageBranchSettings,
+  type BranchSettingsValues,
+} from "@/components/admin/cabang-2/branch-settings";
 import { MenuManagement, type MenuData } from "@/features/menu/components/admin/menu-management";
 import { CustomerManagement } from "@/features/customers/components/admin/customer-management";
+import { ContentManagement } from "@/features/content/components/admin/content-management";
 import Image from "next/image";
 
 type HeritageDashboardProps = {
@@ -38,7 +48,10 @@ type HeritageDashboardProps = {
   menus: MenuData[];
   onSignOut: () => Promise<void>;
   isSuperAdmin?: boolean;
-  activeTab?: "dashboard" | "menu" | "customers";
+  activeTab?: "dashboard" | "menu" | "customers" | "content" | "settings";
+  onSaveSettings?: (
+    values: BranchSettingsValues,
+  ) => Promise<{ success: boolean; message: string }>;
 };
 
 type NavigationItem = {
@@ -46,7 +59,7 @@ type NavigationItem = {
   description: string;
   icon: LucideIcon;
   href?: string;
-  tab?: "dashboard" | "menu" | "customers";
+  tab?: "dashboard" | "menu" | "customers" | "content" | "settings";
 };
 
 const navigationItems: NavigationItem[] = [
@@ -73,13 +86,17 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: "Konten Website",
-    description: "Informasi dan konten cabang",
+    description: "Gallery, event, promosi, dan berita cabang",
     icon: MonitorCog,
+    href: "/admin/cabang-2?tab=content",
+    tab: "content",
   },
   {
     label: "Pengaturan",
-    description: "Pengaturan sistem",
+    description: "Jam operasional, kontak, dan media kerja sama",
     icon: Settings2,
+    href: "/admin/cabang-2?tab=settings",
+    tab: "settings",
   },
 ];
 
@@ -113,7 +130,7 @@ function NavigationLink({
   onNavigate,
 }: {
   item: NavigationItem;
-  activeTab: "dashboard" | "menu" | "customers";
+  activeTab: "dashboard" | "menu" | "customers" | "content" | "settings";
   onNavigate?: () => void;
 }) {
   const Icon = item.icon;
@@ -205,12 +222,48 @@ export function HeritageDashboard({
   onSignOut,
   isSuperAdmin = false,
   activeTab = "dashboard",
+  onSaveSettings,
 }: HeritageDashboardProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [now, setNow] = useState<Date | null>(null);
+  const [showAllDays, setShowAllDays] = useState(false);
 
   const firstName = name.trim().split(/\s+/)[0] || "Admin";
   const branchName = branch?.name ?? "Kopilogi Cabang 2";
   const branchAddress = branch?.address ?? "Informasi alamat belum tersedia";
+
+  const branchView = branch as
+    | (BranchDocument & {
+        weeklyOpeningHours?: WeeklyOpeningHours;
+        openingTime?: string;
+        closingTime?: string;
+        partnerships?: { name: string; url?: string }[];
+      })
+    | null;
+
+  const openingSource = {
+    weekly: branchView?.weeklyOpeningHours,
+    openingTime: branchView?.openingTime,
+    closingTime: branchView?.closingTime,
+  };
+  const schedule = resolveSchedule(openingSource);
+  const hasWeeklySchedule = Boolean(branchView?.weeklyOpeningHours);
+  const openingStatus = now ? getOpeningStatus(openingSource, now) : null;
+  const todayKey = now ? getTodayKey(now) : null;
+  const partnerships = branchView?.partnerships ?? [];
+  const visibleDays = schedule
+    ? showAllDays
+      ? WEEK_DAYS
+      : WEEK_DAYS.filter((day) => day.key === todayKey)
+    : [];
+  const formatTime = (value: string) => value.replace(":", ".");
+
+  // Diisi setelah mount supaya tidak terjadi hydration mismatch
+  useEffect(() => {
+    setNow(new Date());
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -258,7 +311,11 @@ export function HeritageDashboard({
       ? "Pengelolaan Menu"
       : activeTab === "customers"
         ? "Pengelolaan Pelanggan"
-        : "Panel Administrasi Cabang 2";
+        : activeTab === "content"
+          ? "Pengelolaan Konten Website"
+          : activeTab === "settings"
+            ? "Pengaturan Cabang"
+            : "Panel Administrasi Cabang 2";
 
   return (
     <div className="min-h-screen bg-[#F5F0E7] text-[#49372A] selection:bg-[#B99A72]/30">
@@ -582,6 +639,29 @@ export function HeritageDashboard({
               branchSlug="cabang-2"
               branchName={branchName}
             />
+          ) : activeTab === "content" ? (
+            <ContentManagement
+              branchId={branch?._id ? String(branch._id) : undefined}
+              branchSlug="cabang-2"
+              branchName={branchName}
+            />
+          ) : activeTab === "settings" ? (
+            <HeritageBranchSettings
+              initialData={{
+                name: branch?.name ?? "",
+                address: branch?.address ?? "",
+                phone: branch?.phone ?? "",
+                googleMapsUrl: branch?.googleMapsUrl ?? "",
+                weeklyOpeningHours: branchView?.weeklyOpeningHours,
+                openingTime: branchView?.openingTime,
+                closingTime: branchView?.closingTime,
+                partnerships: (branchView?.partnerships ?? []).map((partner) => ({
+                  name: partner.name,
+                  url: partner.url ?? "",
+                })),
+              }}
+              onSave={onSaveSettings}
+            />
           ) : (
             <>
               {/* =================================================
@@ -791,14 +871,13 @@ export function HeritageDashboard({
                     <h3 className="mt-5 text-lg font-semibold text-[#49372A]">Konten Website</h3>
 
                     <p className="mt-2 text-sm leading-6 text-[#88745F]">
-                      Pengelolaan informasi dan konten cabang akan tersedia pada tahap pengembangan
-                      berikutnya.
+                      Kelola gallery, agenda kegiatan, promosi, komunitas, berita, dan highlight media sosial Waroeng Kopilogi.
                     </p>
 
-                    <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#92795E]">
-                      <span className="h-2 w-2 rounded-full bg-[#A8957E]" />
-                      <span>Dalam pengembangan</span>
-                    </div>
+                    <Link href="/admin/cabang-2?tab=content" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#755339] transition-colors hover:text-[#49372A]">
+                      Buka pengelolaan
+                      <ChevronRight size={16} />
+                    </Link>
                   </motion.article>
                 </motion.section>
 
@@ -923,10 +1002,10 @@ export function HeritageDashboard({
                       </div>
                     </div>
 
-                    <div className="mt-6 grid gap-4 border-t border-[#E3D7C6] pt-5 sm:grid-cols-2">
+                    <div className="mt-6 grid gap-5 border-t border-[#E3D7C6] pt-5 sm:grid-cols-2">
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#A18A72]">
-                          Konsep
+                          Konsep Cabang
                         </p>
 
                         <p className="mt-1.5 text-sm font-medium text-[#5E4A38]">
@@ -936,13 +1015,32 @@ export function HeritageDashboard({
 
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#A18A72]">
-                          Status
+                          Status Operasional
                         </p>
 
-                        <div className="mt-1.5 flex items-center gap-2 text-sm font-medium text-[#5E4A38]">
-                          <span className="h-2 w-2 rounded-full bg-[#667451]" />
-                          Aktif
-                        </div>
+                        {openingStatus ? (
+                          <p
+                            className={`mt-1.5 text-sm font-semibold ${
+                              openingStatus.isOpen ? "text-[#51603F]" : "text-[#A8584A]"
+                            }`}
+                          >
+                            {openingStatus.label} · {openingStatus.detail}
+                          </p>
+                        ) : (
+                          <p className="mt-1.5 text-sm font-medium text-[#A18A72]">
+                            {schedule ? "Memuat status..." : "Jadwal belum diatur"}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#A18A72]">
+                          Nomor Kontak
+                        </p>
+
+                        <p className="mt-1.5 text-sm font-medium text-[#5E4A38]">
+                          {branch?.phone || "Belum diatur"}
+                        </p>
                       </div>
                     </div>
 
@@ -951,7 +1049,7 @@ export function HeritageDashboard({
                         href={branch.googleMapsUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#755339] transition-colors hover:text-[#49372A]"
+                        className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#755339] transition-colors hover:text-[#49372A]"
                       >
                         Buka lokasi di Google Maps
                         <ExternalLink size={15} strokeWidth={1.7} />
@@ -1007,6 +1105,135 @@ export function HeritageDashboard({
                         <span className="shrink-0 text-xs font-semibold text-[#667451]">Aktif</span>
                       </div>
                     </div>
+                  </div>
+                </motion.section>
+
+                {/* =================================================
+                    JADWAL MINGGUAN + MEDIA KERJASAMA
+                ================================================== */}
+
+                <motion.section variants={fadeUp} className="grid gap-5 lg:grid-cols-2">
+                  {/* JADWAL MINGGUAN */}
+                  <div className="rounded-2xl border border-[#DED1BF] bg-[#FBF8F2] p-5 sm:p-7">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E8DDD0] text-[#755339]">
+                          <Clock3 size={20} strokeWidth={1.6} />
+                        </div>
+
+                        <div>
+                          <SectionLabel>Jadwal Mingguan</SectionLabel>
+
+                          <h3 className="mt-2 text-lg font-semibold text-[#49372A]">
+                            Jam operasional
+                          </h3>
+                        </div>
+                      </div>
+
+                      {schedule && (
+                        <button
+                          type="button"
+                          onClick={() => setShowAllDays((current) => !current)}
+                          aria-expanded={showAllDays}
+                          className="shrink-0 text-xs font-semibold text-[#755339] transition-colors hover:text-[#49372A]"
+                        >
+                          {showAllDays ? "Ringkas" : "Lihat semua"}
+                        </button>
+                      )}
+                    </div>
+
+                    {schedule ? (
+                      <ul className="mt-5 space-y-2">
+                        {visibleDays.map(({ key, label }) => {
+                          const day = schedule[key];
+                          const isToday = key === todayKey;
+
+                          return (
+                            <li
+                              key={key}
+                              className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 ${
+                                isToday
+                                  ? "border-[#765239]/60 bg-[#F1E7D8]"
+                                  : "border-[#E1D6C5] bg-[#F8F2E9]"
+                              }`}
+                            >
+                              <span className="text-sm font-semibold text-[#49372A]">
+                                {label}
+                                {isToday && " (Hari ini)"}
+                              </span>
+
+                              <span
+                                className={`text-sm ${
+                                  day.isOpen ? "font-medium text-[#5E4A38]" : "text-[#A18A72]"
+                                }`}
+                              >
+                                {day.isOpen
+                                  ? `${formatTime(day.open)} - ${formatTime(day.close)}`
+                                  : "Tutup"}
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="mt-5 rounded-xl border border-dashed border-[#D8C5AC] px-4 py-5 text-center text-sm text-[#88745F]">
+                        Jadwal mingguan belum diatur.
+                      </p>
+                    )}
+
+                    {schedule && !hasWeeklySchedule && (
+                      <p className="mt-3 text-xs text-[#A18A72]">
+                        Menampilkan jam operasional lama. Simpan jadwal mingguan di Pengaturan
+                        untuk memperbarui.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* MEDIA KERJASAMA */}
+                  <div className="rounded-2xl border border-[#DED1BF] bg-[#F8F2E9] p-5 sm:p-7">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E8DDD0] text-[#755339]">
+                        <ExternalLink size={20} strokeWidth={1.6} />
+                      </div>
+
+                      <div>
+                        <SectionLabel>Media Kerjasama</SectionLabel>
+
+                        <h3 className="mt-2 text-lg font-semibold text-[#49372A]">
+                          Platform partner
+                        </h3>
+                      </div>
+                    </div>
+
+                    {partnerships.length > 0 ? (
+                      <div className="mt-5 flex flex-wrap gap-2.5">
+                        {partnerships.map((partner) =>
+                          partner.url ? (
+                            <a
+                              key={`${partner.name}-${partner.url}`}
+                              href={partner.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-2 rounded-full border border-[#D8C5AC] bg-[#FBF8F2] px-3.5 py-2 text-xs font-medium text-[#705B46] transition-colors hover:bg-[#EFE5D7]"
+                            >
+                              {partner.name}
+                              <ExternalLink size={13} strokeWidth={1.7} />
+                            </a>
+                          ) : (
+                            <span
+                              key={partner.name}
+                              className="inline-flex items-center rounded-full border border-[#D8C5AC] bg-[#FBF8F2] px-3.5 py-2 text-xs font-medium text-[#705B46]"
+                            >
+                              {partner.name}
+                            </span>
+                          ),
+                        )}
+                      </div>
+                    ) : (
+                      <p className="mt-5 rounded-xl border border-dashed border-[#D8C5AC] px-4 py-5 text-center text-sm text-[#88745F]">
+                        Belum ada media kerja sama.
+                      </p>
+                    )}
                   </div>
                 </motion.section>
 

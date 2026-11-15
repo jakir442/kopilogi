@@ -8,14 +8,10 @@ import {
   Clock3,
   MessageSquareText,
   MoreHorizontal,
-  Pencil,
   RefreshCw,
   Search,
-  Send,
-  ShieldCheck,
   Star,
   Trash2,
-  UserRound,
   X,
   XCircle,
 } from "lucide-react";
@@ -23,10 +19,8 @@ import {
 import { toast } from "sonner";
 
 import {
-  deleteMenuReviewReplyAction,
   getCustomerReviewsAction,
   removeMenuReviewAction,
-  saveMenuReviewReplyAction,
   updateMenuReviewStatusAction,
 } from "@/features/customers/actions/menu-review.actions";
 
@@ -36,7 +30,6 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type ReviewStatus = "pending" | "approved" | "rejected";
-type ReviewReplyRole = "admin" | "super_admin";
 type FilterOption = "all" | ReviewStatus;
 type BranchTheme = "modern" | "heritage" | "classic" | "cozy";
 
@@ -57,13 +50,6 @@ type CustomerReview = {
   comment?: string;
   status: ReviewStatus;
   createdAt?: string | Date;
-  adminReply?: {
-    message: string;
-    repliedByName?: string;
-    repliedByRole?: ReviewReplyRole;
-    createdAt?: string | Date;
-    updatedAt?: string | Date;
-  } | null;
 };
 
 type ReviewSummary = {
@@ -450,22 +436,6 @@ function getInitials(name: string) {
   );
 }
 
-function getReplyAuthorName(review: CustomerReview) {
-  return review.adminReply?.repliedByName?.trim() || "Admin Kopilogi";
-}
-
-function getReplyRoleLabel(role?: ReviewReplyRole) {
-  if (role === "super_admin") {
-    return "Super Admin · Owner";
-  }
-
-  if (role === "admin") {
-    return "Admin · Karyawan";
-  }
-
-  return "Admin Kopilogi";
-}
-
 function StatusBadge({ status, theme }: { status: ReviewStatus; theme: ThemeConfig }) {
   const config = {
     pending: { label: "Menunggu", icon: Clock3 },
@@ -633,9 +603,10 @@ export function CustomerManagement({
   const [activeFilter, setActiveFilter] = useState<FilterOption>("all");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  const [replyingReviewId, setReplyingReviewId] = useState<string | null>(null);
-  const [replyMessage, setReplyMessage] = useState("");
-
+  /**
+   * Refresh manual dan reload setelah tindakan admin.
+   * Fungsi ini tidak dipanggil dari effect melalui dependency callback.
+   */
   const reloadReviews = useCallback(async () => {
     if (!branchId) {
       setReviews([]);
@@ -662,10 +633,10 @@ export function CustomerManagement({
       setReviews((payload?.reviews ?? []) as CustomerReview[]);
 
       setSummary({
-        totalReviews: payload?.summary?.total ?? 0,
-        pendingReviews: payload?.summary?.pending ?? 0,
-        approvedReviews: payload?.summary?.approved ?? 0,
-        rejectedReviews: payload?.summary?.rejected ?? 0,
+        totalReviews: payload?.summary?.totalReviews ?? 0,
+        pendingReviews: payload?.summary?.pendingReviews ?? 0,
+        approvedReviews: payload?.summary?.approvedReviews ?? 0,
+        rejectedReviews: payload?.summary?.rejectedReviews ?? 0,
         averageRating: payload?.summary?.averageRating ?? 0,
       });
     } catch {
@@ -675,6 +646,10 @@ export function CustomerManagement({
     }
   }, [branchId, branchSlug]);
 
+  /**
+   * Pemuatan awal dilakukan langsung di effect.
+   * Tidak memanggil reloadReviews melalui dependency [reloadReviews].
+   */
   useEffect(() => {
     let active = true;
 
@@ -706,10 +681,10 @@ export function CustomerManagement({
         setReviews((payload?.reviews ?? []) as CustomerReview[]);
 
         setSummary({
-          totalReviews: payload?.summary?.total ?? 0,
-          pendingReviews: payload?.summary?.pending ?? 0,
-          approvedReviews: payload?.summary?.approved ?? 0,
-          rejectedReviews: payload?.summary?.rejected ?? 0,
+          totalReviews: payload?.summary?.totalReviews ?? 0,
+          pendingReviews: payload?.summary?.pendingReviews ?? 0,
+          approvedReviews: payload?.summary?.approvedReviews ?? 0,
+          rejectedReviews: payload?.summary?.rejectedReviews ?? 0,
           averageRating: payload?.summary?.averageRating ?? 0,
         });
       } catch {
@@ -740,9 +715,7 @@ export function CustomerManagement({
         !query ||
         getCustomerName(review).toLowerCase().includes(query) ||
         (review.menuName ?? "").toLowerCase().includes(query) ||
-        (review.comment ?? "").toLowerCase().includes(query) ||
-        (review.adminReply?.message ?? "").toLowerCase().includes(query) ||
-        (review.adminReply?.repliedByName ?? "").toLowerCase().includes(query);
+        (review.comment ?? "").toLowerCase().includes(query);
 
       return matchesStatus && matchesSearch;
     });
@@ -831,135 +804,9 @@ export function CustomerManagement({
 
         toast.success("Ulasan berhasil dihapus.");
         setOpenMenuId(null);
-
-        if (replyingReviewId === reviewId) {
-          setReplyingReviewId(null);
-          setReplyMessage("");
-        }
-
         await reloadReviews();
       } catch {
         toast.error("Terjadi kesalahan saat menghapus ulasan.");
-      }
-    });
-  };
-
-  const handleOpenReply = (review: CustomerReview) => {
-    const reviewId = getReviewId(review);
-
-    if (!reviewId) {
-      toast.error("ID ulasan tidak ditemukan.");
-      return;
-    }
-
-    if (review.status !== "approved") {
-      toast.error("Hanya ulasan yang sudah disetujui yang dapat dibalas.");
-      return;
-    }
-
-    setReplyingReviewId(reviewId);
-    setReplyMessage(review.adminReply?.message ?? "");
-  };
-
-  const handleCancelReply = () => {
-    setReplyingReviewId(null);
-    setReplyMessage("");
-  };
-
-  const handleSaveReply = (review: CustomerReview) => {
-    if (!branchId) {
-      toast.error("ID cabang tidak tersedia.");
-      return;
-    }
-
-    const reviewId = getReviewId(review);
-
-    if (!reviewId) {
-      toast.error("ID ulasan tidak ditemukan.");
-      return;
-    }
-
-    const trimmedMessage = replyMessage.trim();
-
-    if (!trimmedMessage) {
-      toast.error("Balasan tidak boleh kosong.");
-      return;
-    }
-
-    if (trimmedMessage.length > 1000) {
-      toast.error("Balasan maksimal 1000 karakter.");
-      return;
-    }
-
-    startTransition(async () => {
-      try {
-        const result = await saveMenuReviewReplyAction({
-          reviewId,
-          branchId,
-          branchSlug,
-          message: trimmedMessage,
-        });
-
-        if (!result?.success) {
-          toast.error(result?.message || "Balasan gagal disimpan.");
-          return;
-        }
-
-        toast.success(
-          review.adminReply ? "Balasan berhasil diperbarui." : "Balasan berhasil dikirim.",
-        );
-
-        setReplyingReviewId(null);
-        setReplyMessage("");
-        await reloadReviews();
-      } catch {
-        toast.error("Terjadi kesalahan saat menyimpan balasan.");
-      }
-    });
-  };
-
-  const handleDeleteReply = (review: CustomerReview) => {
-    if (!branchId) {
-      toast.error("ID cabang tidak tersedia.");
-      return;
-    }
-
-    const reviewId = getReviewId(review);
-
-    if (!reviewId) {
-      toast.error("ID ulasan tidak ditemukan.");
-      return;
-    }
-
-    const confirmed = window.confirm(
-      "Hapus balasan admin ini? Tindakan ini tidak dapat dibatalkan.",
-    );
-
-    if (!confirmed) return;
-
-    startTransition(async () => {
-      try {
-        const result = await deleteMenuReviewReplyAction({
-          reviewId,
-          branchId,
-          branchSlug,
-        });
-
-        if (!result?.success) {
-          toast.error(result?.message || "Balasan gagal dihapus.");
-          return;
-        }
-
-        toast.success("Balasan berhasil dihapus.");
-
-        if (replyingReviewId === reviewId) {
-          setReplyingReviewId(null);
-          setReplyMessage("");
-        }
-
-        await reloadReviews();
-      } catch {
-        toast.error("Terjadi kesalahan saat menghapus balasan.");
       }
     });
   };
@@ -1000,7 +847,7 @@ export function CustomerManagement({
             </h1>
 
             <p className={cn("mt-3 max-w-2xl text-sm leading-7 sm:text-base", theme.muted)}>
-              Kelola, moderasi, dan tanggapi ulasan menu dari pelanggan{" "}
+              Kelola dan moderasi ulasan menu dari pelanggan{" "}
               <span className={cn("font-medium", theme.heading)}>{branchName}</span>. Ulasan yang
               disetujui dapat ditampilkan kepada pengunjung website.
             </p>
@@ -1077,7 +924,7 @@ export function CustomerManagement({
               </h2>
 
               <p className={cn("mt-2 text-sm leading-6 sm:text-[15px]", theme.soft)}>
-                Cari ulasan, atur status publikasi, dan balas pelanggan.
+                Cari ulasan dan atur status publikasinya.
               </p>
             </div>
 
@@ -1183,8 +1030,6 @@ export function CustomerManagement({
                 const customerName = getCustomerName(review);
                 const menuName = review.menuName || "Menu Kopilogi";
                 const isMenuOpen = openMenuId === reviewId;
-                const isReplying = replyingReviewId === reviewId;
-                const hasReply = Boolean(review.adminReply?.message?.trim());
 
                 return (
                   <article
@@ -1289,20 +1134,6 @@ export function CustomerManagement({
                                       </ActionButton>
                                     )}
 
-                                    {review.status === "approved" && (
-                                      <ActionButton
-                                        disabled={isPending}
-                                        theme={theme}
-                                        onClick={() => {
-                                          setOpenMenuId(null);
-                                          handleOpenReply(review);
-                                        }}
-                                      >
-                                        <MessageSquareText className="size-4" />
-                                        {hasReply ? "Edit balasan" : "Balas pelanggan"}
-                                      </ActionButton>
-                                    )}
-
                                     <div className={cn("my-1 border-t", theme.divider)} />
 
                                     <ActionButton
@@ -1345,182 +1176,6 @@ export function CustomerManagement({
                           </p>
                         </div>
 
-                        {/* Balasan admin */}
-                        {hasReply && !isReplying && (
-                          <div
-                            className={cn(
-                              "mt-4 rounded-xl border p-4 sm:p-5",
-                              theme.accentBorder,
-                              theme.accentBg,
-                            )}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div
-                                className={cn(
-                                  "flex size-9 shrink-0 items-center justify-center rounded-lg border",
-                                  theme.avatar,
-                                )}
-                              >
-                                <ShieldCheck className="size-4" />
-                              </div>
-
-                              <div className="min-w-0 flex-1">
-                                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                                  <div className="min-w-0">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                      <span className={cn("text-sm font-semibold", theme.heading)}>
-                                        {getReplyAuthorName(review)}
-                                      </span>
-
-                                      <span
-                                        className={cn(
-                                          "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium",
-                                          theme.menuBadge,
-                                        )}
-                                      >
-                                        {getReplyRoleLabel(review.adminReply?.repliedByRole)}
-                                      </span>
-                                    </div>
-
-                                    <p className={cn("mt-1 text-xs", theme.soft)}>
-                                      Balasan admin ·{" "}
-                                      {formatReviewDate(review.adminReply?.createdAt)}
-                                      {review.adminReply?.updatedAt &&
-                                      review.adminReply.createdAt !== review.adminReply.updatedAt
-                                        ? " · Diedit"
-                                        : ""}
-                                    </p>
-                                  </div>
-
-                                  <div className="flex shrink-0 items-center gap-1">
-                                    <button
-                                      type="button"
-                                      disabled={isPending}
-                                      onClick={() => handleOpenReply(review)}
-                                      className={cn(
-                                        "flex size-9 items-center justify-center rounded-lg transition-colors",
-                                        theme.action,
-                                      )}
-                                      aria-label="Edit balasan"
-                                      title="Edit balasan"
-                                    >
-                                      <Pencil className="size-4" />
-                                    </button>
-
-                                    <button
-                                      type="button"
-                                      disabled={isPending}
-                                      onClick={() => handleDeleteReply(review)}
-                                      className={cn(
-                                        "flex size-9 items-center justify-center rounded-lg transition-colors",
-                                        theme.dangerAction,
-                                      )}
-                                      aria-label="Hapus balasan"
-                                      title="Hapus balasan"
-                                    >
-                                      <Trash2 className="size-4" />
-                                    </button>
-                                  </div>
-                                </div>
-
-                                <p
-                                  className={cn(
-                                    "mt-3 whitespace-pre-wrap break-words text-sm leading-7 sm:text-[15px]",
-                                    theme.text,
-                                  )}
-                                >
-                                  {review.adminReply?.message}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Form balasan */}
-                        {isReplying && (
-                          <div
-                            className={cn(
-                              "mt-4 rounded-xl border p-4 sm:p-5",
-                              theme.accentBorder,
-                              theme.accentBg,
-                            )}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div
-                                className={cn(
-                                  "flex size-9 items-center justify-center rounded-lg border",
-                                  theme.avatar,
-                                )}
-                              >
-                                <UserRound className="size-4" />
-                              </div>
-
-                              <div>
-                                <p className={cn("text-sm font-semibold", theme.heading)}>
-                                  {hasReply ? "Edit balasan" : "Balas pelanggan"}
-                                </p>
-
-                                <p className={cn("mt-0.5 text-xs", theme.soft)}>
-                                  Balasan akan menggunakan identitas akun yang sedang login.
-                                </p>
-                              </div>
-                            </div>
-
-                            <textarea
-                              value={replyMessage}
-                              onChange={(event) =>
-                                setReplyMessage(event.target.value.slice(0, 1000))
-                              }
-                              maxLength={1000}
-                              rows={4}
-                              placeholder="Tulis balasan yang sopan dan membantu..."
-                              disabled={isPending}
-                              className={cn(
-                                "mt-4 w-full resize-y rounded-xl border px-4 py-3 text-sm leading-7 outline-none transition-colors",
-                                "focus:ring-2",
-                                theme.input,
-                              )}
-                            />
-
-                            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                              <p
-                                className={cn(
-                                  "text-xs tabular-nums",
-                                  replyMessage.length >= 950 ? "text-amber-500" : theme.soft,
-                                )}
-                              >
-                                {replyMessage.length}/1000 karakter
-                              </p>
-
-                              <div className="flex flex-wrap items-center gap-2">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  disabled={isPending}
-                                  onClick={handleCancelReply}
-                                  className={cn("h-10 rounded-xl px-4 text-sm", theme.button)}
-                                >
-                                  Batal
-                                </Button>
-
-                                <Button
-                                  type="button"
-                                  disabled={isPending || !replyMessage.trim()}
-                                  onClick={() => handleSaveReply(review)}
-                                  className={cn(
-                                    "h-10 gap-2 rounded-xl px-4 text-sm",
-                                    theme.approveButton,
-                                  )}
-                                >
-                                  <Send className="size-4" />
-                                  {hasReply ? "Simpan perubahan" : "Kirim balasan"}
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Action utama */}
                         <div className="mt-5 flex flex-wrap gap-2.5">
                           {review.status !== "approved" && (
                             <Button
@@ -1550,22 +1205,6 @@ export function CustomerManagement({
                             >
                               <XCircle className="size-4" />
                               Tolak
-                            </Button>
-                          )}
-
-                          {review.status === "approved" && (
-                            <Button
-                              type="button"
-                              disabled={isPending}
-                              variant="outline"
-                              onClick={() => handleOpenReply(review)}
-                              className={cn(
-                                "h-10 gap-2 rounded-xl px-3.5 text-sm font-medium",
-                                theme.button,
-                              )}
-                            >
-                              <MessageSquareText className="size-4" />
-                              {hasReply ? "Edit balasan" : "Balas pelanggan"}
                             </Button>
                           )}
 
