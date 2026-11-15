@@ -12,12 +12,8 @@ import { updateBranchSettings } from "@/features/branches/actions/branch-setting
 
 export const metadata: Metadata = {
   title: "Cabang 1 | Admin Kopilogi",
-<<<<<<< HEAD
   description:
     "Dashboard, menu, pelanggan, dan konten website Kopilogi Cabang 1.",
-=======
-  description: "Dashboard, menu, pelanggan, dan konten website Kopilogi Cabang 1.",
->>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
 };
 
 async function handleSignOut() {
@@ -39,15 +35,12 @@ export default async function Cabang1AdminPage({
 }: Cabang1AdminPageProps) {
   const session = await requireAdmin();
   const access = await getAdminBranchAccess("cabang-1");
-  
-  console.log(
-  "DATA BRANCH DARI SERVER:",
-  access.branch.weeklyOpeningHours,
-);
 
   if (!access.branch) {
     redirect("/admin");
   }
+
+  console.log("DATA BRANCH DARI SERVER:", access.branch.weeklyOpeningHours);
 
   if (
     session.user.role !== "super_admin" &&
@@ -65,13 +58,9 @@ export default async function Cabang1AdminPage({
         ? "customers"
         : params.tab === "content"
           ? "content"
-<<<<<<< HEAD
           : params.tab === "settings"
             ? "settings"
             : "dashboard";
-=======
-          : "dashboard";
->>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
 
   const menuResult = await getMenus(String(access.branch._id));
   const menus = menuResult.success ? (menuResult.data ?? []) : [];

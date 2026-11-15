@@ -48,14 +48,10 @@ type HeritageDashboardProps = {
   menus: MenuData[];
   onSignOut: () => Promise<void>;
   isSuperAdmin?: boolean;
-<<<<<<< HEAD
   activeTab?: "dashboard" | "menu" | "customers" | "content" | "settings";
   onSaveSettings?: (
     values: BranchSettingsValues,
   ) => Promise<{ success: boolean; message: string }>;
-=======
-  activeTab?: "dashboard" | "menu" | "customers" | "content";
->>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
 };
 
 type NavigationItem = {
@@ -63,11 +59,7 @@ type NavigationItem = {
   description: string;
   icon: LucideIcon;
   href?: string;
-<<<<<<< HEAD
   tab?: "dashboard" | "menu" | "customers" | "content" | "settings";
-=======
-  tab?: "dashboard" | "menu" | "customers" | "content";
->>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
 };
 
 const navigationItems: NavigationItem[] = [
@@ -138,11 +130,7 @@ function NavigationLink({
   onNavigate,
 }: {
   item: NavigationItem;
-<<<<<<< HEAD
   activeTab: "dashboard" | "menu" | "customers" | "content" | "settings";
-=======
-  activeTab: "dashboard" | "menu" | "customers" | "content";
->>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
   onNavigate?: () => void;
 }) {
   const Icon = item.icon;
@@ -272,9 +260,12 @@ export function HeritageDashboard({
 
   // Diisi setelah mount supaya tidak terjadi hydration mismatch
   useEffect(() => {
-    setNow(new Date());
+    const initialUpdate = setTimeout(() => setNow(new Date()), 0);
     const timer = setInterval(() => setNow(new Date()), 60_000);
-    return () => clearInterval(timer);
+    return () => {
+      clearTimeout(initialUpdate);
+      clearInterval(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -325,13 +316,9 @@ export function HeritageDashboard({
         ? "Pengelolaan Pelanggan"
         : activeTab === "content"
           ? "Pengelolaan Konten Website"
-<<<<<<< HEAD
           : activeTab === "settings"
             ? "Pengaturan Cabang"
             : "Panel Administrasi Cabang 2";
-=======
-          : "Panel Administrasi Cabang 2";
->>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
 
   return (
     <div className="min-h-screen bg-[#F5F0E7] text-[#49372A] selection:bg-[#B99A72]/30">
@@ -661,7 +648,6 @@ export function HeritageDashboard({
               branchSlug="cabang-2"
               branchName={branchName}
             />
-<<<<<<< HEAD
           ) : activeTab === "settings" ? (
             <HeritageBranchSettings
               initialData={{
@@ -679,8 +665,6 @@ export function HeritageDashboard({
               }}
               onSave={onSaveSettings}
             />
-=======
->>>>>>> 68a0ec202286fa75a02a95b69660ec6046dfa9dd
           ) : (
             <>
               {/* =================================================
