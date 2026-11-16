@@ -12,7 +12,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
 
 import type { PublicMenu, PublicMenuCategory } from "@/features/menu/types";
 import type { BranchContent } from "@/features/content/types";
@@ -89,11 +89,40 @@ const formatPrice = (price: number) =>
   }).format(price);
 
 /**
+ * Scroll ke section yang tersedia pada halaman cabang.
+ *
+ * Fungsi ini menggunakan scrollIntoView agar pergerakan
+ * tetap halus di desktop maupun perangkat mobile.
+ */
+function handleSectionScroll(event: MouseEvent<HTMLAnchorElement>, sectionId: string) {
+  const section = document.getElementById(sectionId);
+
+  // Jika section tidak ditemukan, biarkan browser menangani tautan.
+  if (!section) {
+    return;
+  }
+
+  event.preventDefault();
+
+  section.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+
+  // Perbarui hash tanpa memicu navigasi atau lompatan tambahan.
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${window.location.search}#${sectionId}`,
+  );
+}
+
+/**
  * Jumlah menu katalog berdasarkan lebar layar.
  *
- * Desktop  : 8 menu = 4 kolom × 2 baris
- * Tablet   : 6 menu = 3 kolom × 2 baris
- * Mobile   : 4 menu = 2 kolom × 2 baris
+ * Desktop : 8 menu = 4 kolom x 2 baris
+ * Tablet  : 6 menu = 3 kolom x 2 baris
+ * Mobile  : 4 menu = 2 kolom x 2 baris
  */
 function getItemsPerPage() {
   if (typeof window === "undefined") {
@@ -114,9 +143,9 @@ function getItemsPerPage() {
 /**
  * Jumlah Best Seller yang terlihat sebelum slider diperlukan.
  *
- * Desktop  : 4 card
- * Tablet   : 3 card
- * Mobile   : 2 card
+ * Desktop : 4 card
+ * Tablet  : 3 card
+ * Mobile  : 2 card
  */
 function getBestSellerVisibleCount() {
   if (typeof window === "undefined") {
@@ -199,8 +228,7 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
 
   /*
    * BEST SELLER
-   *
-   * Best Seller hanya ditampilkan pada slider.
+   * Hanya menampilkan menu unggulan yang tersedia.
    */
   const featuredMenus = menus.filter(
     (menu) => menu.branchSlug === branch.slug && menu.featured && menu.isAvailable,
@@ -208,8 +236,7 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
 
   /*
    * KATALOG REGULER
-   *
-   * Best Seller tidak diduplikasi di katalog reguler.
+   * Menu Best Seller tidak diduplikasi di katalog.
    */
   const branchMenus = menus.filter(
     (menu) => menu.branchSlug === branch.slug && menu.isAvailable && !menu.featured,
@@ -284,12 +311,8 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
   )}`;
 
   /*
-   * Slider Best Seller hanya aktif jika jumlah menu
-   * melebihi jumlah card yang terlihat pada breakpoint.
-   *
-   * Desktop > 4
-   * Tablet  > 3
-   * Mobile  > 2
+   * Slider Best Seller aktif hanya ketika jumlah menu
+   * melebihi jumlah kartu yang terlihat.
    */
   const showBestSellerSlider = featuredMenus.length > bestSellerVisibleCount;
 
@@ -364,7 +387,8 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
-                  href="#best-seller"
+                  href="#menu"
+                  onClick={(event) => handleSectionScroll(event, "menu")}
                   className={`inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold transition hover:opacity-90 ${theme.accent}`}
                 >
                   Explore menu
@@ -432,7 +456,8 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <a
-                    href="#best-seller"
+                    href="#menu"
+                    onClick={(event) => handleSectionScroll(event, "menu")}
                     className={`inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold transition hover:opacity-90 ${theme.accent}`}
                   >
                     Jelajahi menu
@@ -516,7 +541,8 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
 
                 <div className="mt-7 flex flex-wrap gap-3">
                   <a
-                    href="#best-seller"
+                    href="#menu"
+                    onClick={(event) => handleSectionScroll(event, "menu")}
                     className={`inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold transition hover:opacity-90 ${theme.accent}`}
                   >
                     Lihat pilihan
@@ -586,8 +612,7 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
               </p>
 
               <h2 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-                Best Seller
-                <span className="opacity-50">.</span>
+                Best Seller<span className="opacity-50">.</span>
               </h2>
 
               <p className={`mt-2 max-w-md text-sm leading-6 ${theme.muted}`}>
@@ -595,7 +620,6 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
               </p>
             </div>
 
-            {/* Tombol hanya muncul jika slider memang dibutuhkan */}
             {showBestSellerSlider && (
               <div className="flex shrink-0 gap-2">
                 <button
@@ -633,14 +657,13 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
                 <article
                   key={menu.id}
                   data-best-seller-card
-                  className={`group flex-none w-[calc((100%-0.75rem)/2)] snap-start overflow-hidden border transition duration-300 hover:-translate-y-1 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] ${theme.card} ${cardRadius}`}
+                  className={`group w-[calc((100%-0.75rem)/2)] flex-none snap-start overflow-hidden border transition duration-300 hover:-translate-y-1 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] ${theme.card} ${cardRadius}`}
                 >
                   <Link
                     href={`/${branch.slug}/${menu.slug}`}
                     className="block"
                     aria-label={`Lihat detail ${menu.name}`}
                   >
-                    {/* Gambar */}
                     <div className="relative aspect-[5/4] overflow-hidden bg-black/5">
                       {menu.image ? (
                         <Image
@@ -675,7 +698,6 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
                       )}
                     </div>
 
-                    {/* Informasi */}
                     <div className="p-3 sm:p-3.5">
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="line-clamp-2 text-sm font-semibold tracking-tight sm:text-base">
@@ -707,9 +729,7 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
             </div>
           ) : (
             <div
-              className={`border border-dashed px-5 py-10 text-center ${theme.line} ${
-                isTasik ? "rounded-3xl" : ""
-              }`}
+              className={`border border-dashed px-5 py-10 text-center ${theme.line} ${isTasik ? "rounded-3xl" : ""}`}
             >
               <p className={`text-sm ${theme.muted}`}>
                 Belum ada menu Best Seller untuk cabang ini.
@@ -732,8 +752,7 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
             </p>
 
             <h2 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-              Menu Kopilogi
-              <span className="opacity-50">.</span>
+              Menu Kopilogi<span className="opacity-50">.</span>
             </h2>
 
             <p className={`mt-2 max-w-md text-sm leading-6 ${theme.muted}`}>
@@ -741,13 +760,9 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
             </p>
           </div>
 
-          {/* =====================================================
-              SEARCH + FILTER
-          ====================================================== */}
+          {/* SEARCH + FILTER */}
           <div
-            className={`mt-6 rounded-2xl border p-3 sm:p-4 ${theme.line} ${
-              isCikuray ? "bg-white/[0.025]" : "bg-black/[0.015]"
-            }`}
+            className={`mt-6 rounded-2xl border p-3 sm:p-4 ${theme.line} ${isCikuray ? "bg-white/[0.025]" : "bg-black/[0.015]"}`}
           >
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div
@@ -843,13 +858,7 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
             </div>
           </div>
 
-          {/* =====================================================
-              KARTU MENU REGULER
-              
-              Desktop : 4 kolom × 2 baris = 8
-              Tablet  : 3 kolom × 2 baris = 6
-              Mobile  : 2 kolom × 2 baris = 4
-          ====================================================== */}
+          {/* KARTU MENU REGULER */}
           {paginatedMenus.length > 0 ? (
             <>
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
@@ -859,7 +868,6 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
                     href={`/${branch.slug}/${menu.slug}`}
                     className={`group flex h-full flex-col overflow-hidden border transition duration-300 hover:-translate-y-1 ${theme.card} ${cardRadius}`}
                   >
-                    {/* Gambar menu */}
                     <div className="relative aspect-[5/4] overflow-hidden bg-black/5">
                       {menu.image ? (
                         <Image
@@ -882,7 +890,6 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
                       </span>
                     </div>
 
-                    {/* Informasi menu */}
                     <div className="flex flex-1 flex-col p-3">
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="line-clamp-1 text-sm font-semibold">{menu.name}</h3>
@@ -916,9 +923,7 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
                 ))}
               </div>
 
-              {/* =================================================
-                  PAGINATION
-              ================================================== */}
+              {/* PAGINATION */}
               {totalPages > 1 && (
                 <nav
                   className="mt-8 flex flex-col items-center gap-3 sm:mt-10"
@@ -971,9 +976,7 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
             </>
           ) : (
             <div
-              className={`mt-6 border border-dashed px-5 py-12 text-center ${theme.line} ${
-                isTasik ? "rounded-3xl" : ""
-              }`}
+              className={`mt-6 border border-dashed px-5 py-12 text-center ${theme.line} ${isTasik ? "rounded-3xl" : ""}`}
             >
               <Search className={`mx-auto mb-3 size-5 ${theme.muted}`} />
 
@@ -1005,7 +1008,6 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
 
       {/* =========================================================
           KONTEN WEBSITE CABANG
-          Seluruh konten CMS ditampilkan setelah katalog menu.
       ========================================================== */}
       {contents.length > 0 && (
         <BranchContentSections
@@ -1119,7 +1121,11 @@ export function BranchLandingPage({ branch, menus, contents = [] }: BranchLandin
             © {new Date().getFullYear()} {branch.name}
           </p>
 
-          <a href="#menu" className="inline-flex items-center gap-1 transition hover:opacity-60">
+          <a
+            href="#menu"
+            onClick={(event) => handleSectionScroll(event, "menu")}
+            className="inline-flex items-center gap-1 transition hover:opacity-60"
+          >
             Jelajahi menu
             <ArrowUpRight className="size-3.5" />
           </a>
