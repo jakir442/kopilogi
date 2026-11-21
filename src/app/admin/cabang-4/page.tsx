@@ -3,9 +3,11 @@ import { redirect } from "next/navigation";
 
 import { signOut } from "@/auth";
 import { CozyDashboard } from "@/components/admin/cabang-4/cozy-dashboard";
+import type { BranchSettingsValues } from "@/components/admin/cabang-4/branch-settings";
 import { getAdminBranchAccess } from "@/lib/auth/branch-access";
 import { requireAdmin } from "@/lib/auth/authorization";
 import { getMenus } from "@/features/menu/actions/menu.actions";
+import { updateBranchSettings } from "@/features/branches/actions/branch-settings.actions";
 
 export const metadata: Metadata = {
   title: "Cabang 4 | Admin Kopilogi",
@@ -49,6 +51,17 @@ export default async function Cabang4AdminPage({ searchParams }: Cabang4AdminPag
   const menuResult = await getMenus(String(access.branch._id));
   const menus = menuResult.success ? (menuResult.data ?? []) : [];
 
+  const branchSlug = access.branch.slug;
+
+  async function saveBranchSettings(values: BranchSettingsValues) {
+    "use server";
+
+    return updateBranchSettings({
+      slug: branchSlug,
+      ...values,
+    });
+  }
+
   return (
     <CozyDashboard
       name={session.user.name ?? "Admin"}
@@ -58,6 +71,7 @@ export default async function Cabang4AdminPage({ searchParams }: Cabang4AdminPag
       onSignOut={handleSignOut}
       isSuperAdmin={session.user.role === "super_admin"}
       activeTab={activeTab}
+      onSaveSettings={saveBranchSettings}
     />
   );
 }

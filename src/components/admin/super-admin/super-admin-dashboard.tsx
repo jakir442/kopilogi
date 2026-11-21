@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   Activity,
   ArrowUpRight,
@@ -14,16 +15,15 @@ import {
   Users,
   Search,
   SlidersHorizontal,
+  Settings,
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-
+import { toast } from "sonner";
 import { CreateAdminDialog } from "./create-admin-dialog";
 import { EditAdminDialog } from "./edit-admin-dialog";
 import { DeleteAdminDialog } from "./delete-admin-dialog";
 import { ScrollbarTheme } from "@/components/layout/scrollbar-theme";
-import { toast } from "sonner";
-import Image from "next/image";
 
 type AdminBranch = {
   id: string;
@@ -113,20 +113,19 @@ export function SuperAdminDashboard({
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBranch, setSelectedBranch] = useState("all");
+  const [activeSection, setActiveSection] = useState("overview");
 
   const activeBranches = branches.filter((branch) => branch.isActive).length;
-
-  const [activeSection, setActiveSection] = useState("overview");
 
   useEffect(() => {
     const updateActiveSection = () => {
       const marker = window.scrollY + 180;
-      const branches = document.getElementById("branches");
-      const administrators = document.getElementById("administrators");
+      const branchesEl = document.getElementById("branches");
+      const administratorsEl = document.getElementById("administrators");
 
-      if (administrators && marker >= administrators.offsetTop) {
+      if (administratorsEl && marker >= administratorsEl.offsetTop) {
         setActiveSection("administrators");
-      } else if (branches && marker >= branches.offsetTop) {
+      } else if (branchesEl && marker >= branchesEl.offsetTop) {
         setActiveSection("branches");
       } else {
         setActiveSection("overview");
@@ -134,9 +133,7 @@ export function SuperAdminDashboard({
     };
 
     updateActiveSection();
-
     window.addEventListener("scroll", updateActiveSection, { passive: true });
-
     return () => window.removeEventListener("scroll", updateActiveSection);
   }, []);
 
@@ -157,7 +154,6 @@ export function SuperAdminDashboard({
 
   async function handleSignOut() {
     if (isSigningOut) return;
-
     setIsSigningOut(true);
 
     try {
@@ -186,14 +182,12 @@ export function SuperAdminDashboard({
                   alt='Logo Kopilogi'
                   fill
                   sizes='40px'
-                  className='object-contain p-1 transition-transform duration-300 group-hover:scale-105'
+                  className='object-contain p-1'
                   priority
                 />
               </div>
-
               <div>
                 <p className='text-sm font-bold tracking-[0.2em]'>KOPILOGI</p>
-
                 <p className='mt-0.5 text-[10px] uppercase tracking-[0.16em] text-white/45'>
                   Control Center
                 </p>
@@ -256,6 +250,14 @@ export function SuperAdminDashboard({
               <ShieldCheck className='size-4' />
               Super Admin
             </div>
+
+            <Link
+              href='/admin/super-admin/settings'
+              className='flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/55 transition-all hover:bg-white/[0.06] hover:text-white'
+            >
+              <Settings className='size-4 shrink-0' />
+              Pengaturan
+            </Link>
           </nav>
 
           {/* Sidebar User */}
@@ -265,7 +267,6 @@ export function SuperAdminDashboard({
                 <div className='flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10'>
                   <CircleUserRound className='size-4 text-white/70' />
                 </div>
-
                 <div className='min-w-0'>
                   <p className='truncate text-sm font-medium'>{name}</p>
                   <p className='truncate text-[11px] text-white/40'>{email}</p>
@@ -280,15 +281,14 @@ export function SuperAdminDashboard({
               className='flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-white/50 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-not-allowed disabled:opacity-50'
             >
               <LogOut className='size-4' />
-
               {isSigningOut ? "Keluar..." : "Keluar"}
             </button>
           </div>
         </aside>
 
         {/* =========================================================
-          MOBILE HEADER
-      ========================================================== */}
+            MOBILE HEADER
+        ========================================================== */}
         <header className='fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-black/[0.06] bg-[#f6f5f2]/95 px-4 backdrop-blur-xl lg:hidden'>
           <div className='flex items-center gap-2.5'>
             <div className='relative flex size-8 shrink-0 items-center justify-center'>
@@ -301,7 +301,6 @@ export function SuperAdminDashboard({
                 priority
               />
             </div>
-
             <div className='space-y-0.5'>
               <p className='text-xs font-bold tracking-[0.16em] text-[#171715]'>KOPILOGI</p>
               <p className='text-[9px] font-medium uppercase tracking-[0.12em] text-black/40'>
@@ -375,6 +374,15 @@ export function SuperAdminDashboard({
                   Administrator
                 </Link>
 
+                <Link
+                  href='/admin/super-admin/settings'
+                  onClick={closeMobileMenu}
+                  className='flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-black/60 transition-all duration-200 hover:bg-[#171715]/[0.06] hover:text-[#171715]'
+                >
+                  <Settings className='size-4 shrink-0' />
+                  Pengaturan
+                </Link>
+
                 <button
                   type='button'
                   onClick={handleSignOut}
@@ -398,11 +406,9 @@ export function SuperAdminDashboard({
                 <p className='mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#9a7956]'>
                   Super Admin
                 </p>
-
                 <h1 className='text-3xl font-semibold tracking-[-0.03em] sm:text-4xl'>
                   Selamat datang, {getFirstName(name)}.
                 </h1>
-
                 <p className='mt-2 max-w-xl text-sm leading-6 text-neutral-500'>
                   Pantau dan kelola seluruh ekosistem digital Kopilogi dari satu tempat.
                 </p>
@@ -413,7 +419,6 @@ export function SuperAdminDashboard({
                   <span className='absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60' />
                   <span className='relative inline-flex size-2.5 rounded-full bg-emerald-500' />
                 </span>
-
                 <span className='text-xs font-medium text-neutral-600'>System operational</span>
               </div>
             </header>
@@ -429,21 +434,18 @@ export function SuperAdminDashboard({
                 value={branches.length}
                 description='Cabang terdaftar'
               />
-
               <StatCard
                 icon={Activity}
                 label='Cabang Aktif'
                 value={activeBranches}
                 description='Cabang berstatus aktif'
               />
-
               <StatCard
                 icon={Users}
                 label='Administrator'
                 value={admins.length}
                 description='Admin cabang terdaftar'
               />
-
               <StatCard
                 icon={ShieldCheck}
                 label='System Access'
@@ -453,19 +455,17 @@ export function SuperAdminDashboard({
             </section>
 
             {/* =====================================================
-              KARTU CABANG
-          ====================================================== */}
+                KARTU CABANG
+            ====================================================== */}
             <section>
               <div className='mb-5 mt-10 flex items-end justify-between gap-4'>
                 <div>
                   <p className='text-xs font-semibold uppercase tracking-[0.16em] text-neutral-400'>
                     Branch Management
                   </p>
-
                   <h2 className='mt-1 text-xl font-semibold tracking-tight text-[#22221f]'>
                     Cabang Kopilogi
                   </h2>
-
                   <p className='mt-1 text-sm text-neutral-500'>
                     Kelola dan pantau administrator pada setiap cabang.
                   </p>
@@ -473,7 +473,6 @@ export function SuperAdminDashboard({
 
                 <div className='hidden rounded-xl border border-black/[0.06] bg-white px-3.5 py-2 sm:block'>
                   <p className='text-xs text-neutral-400'>Total Cabang</p>
-
                   <p className='mt-0.5 text-lg font-semibold text-[#22221f]'>{branches.length}</p>
                 </div>
               </div>
@@ -532,7 +531,6 @@ export function SuperAdminDashboard({
                             <p className='text-[10px] font-semibold uppercase tracking-wider text-neutral-400'>
                               Konsep
                             </p>
-
                             <p className='mt-1 text-sm font-medium capitalize text-[#22221f]'>
                               {formatConcept(branch.concept)}
                             </p>
@@ -542,7 +540,6 @@ export function SuperAdminDashboard({
                             <p className='text-[10px] font-semibold uppercase tracking-wider text-neutral-400'>
                               Administrator
                             </p>
-
                             <p className='mt-1 text-sm font-semibold text-[#22221f]'>
                               {adminCount} admin
                             </p>
@@ -553,7 +550,6 @@ export function SuperAdminDashboard({
                           <p className='text-[10px] font-semibold uppercase tracking-wider text-neutral-400'>
                             Alamat
                           </p>
-
                           <p className='mt-1 line-clamp-2 text-sm leading-5 text-neutral-600'>
                             {branch.address}
                           </p>
@@ -565,7 +561,6 @@ export function SuperAdminDashboard({
                               ? "Belum ada administrator"
                               : `${adminCount} administrator ditugaskan`}
                           </span>
-
                           <span className='inline-flex size-8 items-center justify-center rounded-lg bg-neutral-100 text-xs font-semibold text-neutral-600'>
                             {adminCount}
                           </span>
@@ -578,42 +573,37 @@ export function SuperAdminDashboard({
             </section>
 
             {/* =====================================================
-              BRANCH NETWORK
-          ====================================================== */}
+                BRANCH NETWORK
+            ====================================================== */}
             <section id='branches' className='mt-10 scroll-mt-8'>
               <div className='mb-5 flex items-end justify-between gap-4'>
                 <div>
                   <p className='text-xs font-semibold uppercase tracking-[0.16em] text-neutral-400'>
                     Branch Network
                   </p>
-
                   <h2 className='mt-1 text-xl font-semibold tracking-tight'>Cabang Kopilogi</h2>
                 </div>
-
                 <span className='text-xs text-neutral-400'>{branches.length} lokasi</span>
               </div>
 
               <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
                 {branchMeta.map((meta) => {
                   const branch = branches.find((item) => item.slug === meta.slug);
-
                   return <BranchCard key={meta.slug} meta={meta} branch={branch ?? null} />;
                 })}
               </div>
             </section>
 
             {/* =====================================================
-              ADMINISTRATOR MANAGEMENT
-          ====================================================== */}
+                ADMINISTRATOR MANAGEMENT
+            ====================================================== */}
             <section id='administrators' className='mt-10 scroll-mt-8'>
               <div className='mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end'>
                 <div>
                   <p className='text-xs font-semibold uppercase tracking-[0.16em] text-neutral-400'>
                     Access Management
                   </p>
-
                   <h2 className='mt-1 text-xl font-semibold tracking-tight'>Administrator</h2>
-
                   <p className='mt-1 text-sm text-neutral-500'>
                     Pantau akun administrator yang ditugaskan pada setiap cabang.
                   </p>
@@ -621,7 +611,6 @@ export function SuperAdminDashboard({
 
                 <div className='flex items-center gap-2'>
                   <CreateAdminDialog branches={branches} />
-
                   <button
                     type='button'
                     disabled
@@ -638,10 +627,8 @@ export function SuperAdminDashboard({
                     <div className='flex size-10 items-center justify-center rounded-xl bg-[#f3f1ec]'>
                       <Users className='size-4 text-[#806646]' />
                     </div>
-
                     <div>
                       <p className='text-sm font-semibold'>Administrator Cabang</p>
-
                       <p className='text-xs text-neutral-400'>Data akun dari database Kopilogi.</p>
                     </div>
                   </div>
@@ -656,9 +643,7 @@ export function SuperAdminDashboard({
                     <div className='mx-auto flex size-12 items-center justify-center rounded-2xl bg-neutral-50'>
                       <Users className='size-5 text-neutral-400' />
                     </div>
-
                     <h3 className='mt-4 text-sm font-semibold'>Belum ada administrator cabang</h3>
-
                     <p className='mx-auto mt-1 max-w-md text-xs leading-5 text-neutral-400'>
                       Belum ditemukan akun dengan role admin. Akun super_admin tidak termasuk dalam
                       daftar ini.
@@ -675,7 +660,6 @@ export function SuperAdminDashboard({
                     <div className='flex flex-col gap-3 border-b border-black/[0.05] p-5 sm:flex-row sm:items-center sm:justify-between md:px-6'>
                       <div className='relative w-full sm:max-w-sm'>
                         <Search className='pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400' />
-
                         <input
                           type='search'
                           value={searchQuery}
@@ -684,7 +668,6 @@ export function SuperAdminDashboard({
                           aria-label='Cari administrator'
                           className='h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-10 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-4 focus:ring-neutral-100'
                         />
-
                         {searchQuery && (
                           <button
                             type='button'
@@ -699,7 +682,6 @@ export function SuperAdminDashboard({
 
                       <div className='flex items-center gap-2'>
                         <SlidersHorizontal className='size-4 shrink-0 text-neutral-400' />
-
                         <select
                           value={selectedBranch}
                           onChange={(event) => setSelectedBranch(event.target.value)}
@@ -707,7 +689,6 @@ export function SuperAdminDashboard({
                           className='h-11 min-w-0 flex-1 rounded-xl border border-neutral-200 bg-white px-3 text-sm outline-none transition focus:border-neutral-400 focus:ring-4 focus:ring-neutral-100 sm:min-w-48'
                         >
                           <option value='all'>Semua cabang</option>
-
                           {branches.map((branch) => (
                             <option key={branch.id} value={branch.id}>
                               {branch.name}
@@ -752,9 +733,7 @@ export function SuperAdminDashboard({
                               <p className='truncate text-sm font-semibold text-[#22221f]'>
                                 {admin.name}
                               </p>
-
                               <p className='truncate text-xs text-neutral-400'>{admin.email}</p>
-
                               <span className='mt-1 inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700'>
                                 Administrator
                               </span>
@@ -765,17 +744,14 @@ export function SuperAdminDashboard({
                             <p className='mb-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 md:hidden'>
                               Cabang
                             </p>
-
                             {admin.branch ? (
                               <>
                                 <p className='truncate text-sm font-medium text-[#22221f]'>
                                   {admin.branch.name}
                                 </p>
-
                                 <p className='mt-0.5 text-xs capitalize text-neutral-400'>
                                   {formatConcept(admin.branch.concept)}
                                 </p>
-
                                 <span
                                   className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${
                                     admin.branch.isActive
@@ -795,15 +771,11 @@ export function SuperAdminDashboard({
                             <p className='mb-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 md:hidden'>
                               Bergabung
                             </p>
-
-                            <p className='text-sm text-neutral-600'>
-                              {formatDate(admin.createdAt)}
-                            </p>
+                            <p className='text-sm text-neutral-600'>{formatDate(admin.createdAt)}</p>
                           </div>
 
                           <div className='flex items-center justify-start gap-1 md:justify-end'>
                             <EditAdminDialog admin={admin} branches={branches} />
-
                             <DeleteAdminDialog adminId={admin.id} adminName={admin.name} />
                           </div>
                         </div>
@@ -814,15 +786,12 @@ export function SuperAdminDashboard({
                           <div className='mx-auto flex size-12 items-center justify-center rounded-2xl bg-neutral-100'>
                             <Search className='size-5 text-neutral-400' />
                           </div>
-
                           <h3 className='mt-4 text-sm font-semibold text-neutral-900'>
                             Administrator tidak ditemukan
                           </h3>
-
                           <p className='mt-1 text-sm text-neutral-500'>
                             Coba gunakan kata kunci lain atau ubah filter cabang.
                           </p>
-
                           <button
                             type='button'
                             onClick={() => {
@@ -869,15 +838,12 @@ function StatCard({ icon: Icon, label, value, description }: StatCardProps) {
         <div className='flex size-10 items-center justify-center rounded-xl bg-[#f3f1ec]'>
           <Icon className='size-4 text-[#806646]' />
         </div>
-
         <ChevronRight className='size-4 text-neutral-300' />
       </div>
 
       <div className='mt-6'>
         <p className='text-xs font-medium text-neutral-400'>{label}</p>
-
         <p className='mt-1 text-3xl font-semibold tracking-tight'>{value}</p>
-
         <p className='mt-1 text-xs text-neutral-400'>{description}</p>
       </div>
     </div>
@@ -904,7 +870,6 @@ function BranchCard({ meta, branch }: BranchCardProps) {
     <>
       <div className={`relative min-h-44 overflow-hidden bg-gradient-to-br ${meta.className}`}>
         <div className='absolute -right-10 -top-10 size-40 rounded-full bg-white/[0.06]' />
-
         <div className='absolute -bottom-16 -left-10 size-40 rounded-full bg-black/[0.08]' />
 
         <div className='relative flex min-h-44 flex-col justify-between p-5'>
@@ -924,7 +889,6 @@ function BranchCard({ meta, branch }: BranchCardProps) {
 
           <div>
             <p className='text-2xl font-semibold tracking-tight'>{meta.label}</p>
-
             <p className='mt-1 text-xs text-white/60'>{meta.description}</p>
           </div>
         </div>
@@ -933,7 +897,6 @@ function BranchCard({ meta, branch }: BranchCardProps) {
       <div className='flex items-center justify-between gap-4 px-5 py-4'>
         <div className='min-w-0'>
           <p className='truncate text-sm font-medium'>{branch?.name ?? meta.label}</p>
-
           <p className='mt-0.5 line-clamp-1 text-xs text-neutral-400'>
             {branch?.address ?? "Data cabang belum tersedia"}
           </p>
