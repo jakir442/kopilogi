@@ -11,11 +11,13 @@ import {
   Building2,
   ChevronRight,
   CircleUserRound,
+  Clock3,
   Coffee,
   ExternalLink,
   LogOut,
   MapPin,
   Menu as MenuIcon,
+  Phone,
   Settings,
   ShoppingBag,
   Sparkles,
@@ -29,7 +31,17 @@ import Image from "next/image";
 import { MenuManagement, type MenuData } from "@/features/menu/components/admin/menu-management";
 import { CustomerManagement } from "@/features/customers/components/admin/customer-management";
 import { ContentManagement } from "@/features/content/components/admin/content-management";
-import type { BranchDocument } from "@/features/branches/types";
+import type { BranchDocument, WeeklyOpeningHours } from "@/features/branches/types";
+import {
+  WEEK_DAYS,
+  getOpeningStatus,
+  getTodayKey,
+  resolveSchedule,
+} from "@/features/branches/lib/opening-hours";
+import {
+  CozyBranchSettings,
+  type BranchSettingsValues,
+} from "@/components/admin/cabang-4/branch-settings";
 
 type AdminTab = "dashboard" | "menu" | "customers" | "content" | "settings";
 
@@ -41,6 +53,9 @@ type CozyDashboardProps = {
   onSignOut: () => Promise<void>;
   isSuperAdmin?: boolean;
   activeTab?: AdminTab;
+  onSaveSettings?: (
+    values: BranchSettingsValues,
+  ) => Promise<{ success: boolean; message: string }>;
 };
 
 type NavigationItem = {
@@ -253,58 +268,6 @@ function UserIdentity({
   );
 }
 
-function ComingSoonSection({
-  icon: Icon,
-  eyebrow,
-  title,
-  description,
-}: {
-  icon: typeof Globe2;
-  eyebrow: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
-      <motion.section
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45 }}
-        className="rounded-[26px] border border-black/[0.07] bg-white p-6 shadow-[0_12px_40px_rgba(0,0,0,0.04)] sm:p-8 lg:p-10"
-      >
-        <div className="flex max-w-3xl flex-col">
-          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-950 text-white">
-            <Icon className="h-5 w-5" />
-          </div>
-
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500 sm:text-[11px]">
-            {eyebrow}
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
-            {title}
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-neutral-500 sm:text-base">
-            {description}
-          </p>
-
-          <div className="mt-7 rounded-2xl border border-dashed border-black/10 bg-[#F5F5F3] p-5">
-            <div className="flex items-start gap-3">
-              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-neutral-500" />
-              <div>
-                <p className="text-sm font-semibold text-neutral-800">Fitur sedang disiapkan</p>
-                <p className="mt-1 text-xs leading-6 text-neutral-500">
-                  Struktur workspace Cabang 4 sudah disiapkan agar konsisten dengan navigasi cabang
-                  lainnya. Fitur pengelolaan bagian ini dapat dikembangkan pada tahap berikutnya.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.section>
-    </div>
-  );
-}
-
 export function CozyDashboard({
   name,
   email,
@@ -313,12 +276,48 @@ export function CozyDashboard({
   onSignOut,
   isSuperAdmin = false,
   activeTab = "dashboard",
+  onSaveSettings,
 }: CozyDashboardProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [now, setNow] = useState<Date | null>(null);
+  const [showAllDays, setShowAllDays] = useState(false);
 
   const branchName = branch?.name ?? "Kopilogi Cabang 4";
   const branchAddress = branch?.address ?? "Informasi alamat cabang belum tersedia.";
   const firstName = name.trim().split(/\s+/)[0] || "Admin";
+
+  const branchView = branch as
+    | (BranchDocument & {
+        weeklyOpeningHours?: WeeklyOpeningHours;
+        openingTime?: string;
+        closingTime?: string;
+        partnerships?: { name: string; url?: string }[];
+      })
+    | null;
+
+  const openingSource = {
+    weekly: branchView?.weeklyOpeningHours,
+    openingTime: branchView?.openingTime,
+    closingTime: branchView?.closingTime,
+  };
+  const schedule = resolveSchedule(openingSource);
+  const hasWeeklySchedule = Boolean(branchView?.weeklyOpeningHours);
+  const openingStatus = now ? getOpeningStatus(openingSource, now) : null;
+  const todayKey = now ? getTodayKey(now) : null;
+  const partnerships = branchView?.partnerships ?? [];
+  const visibleDays = schedule
+    ? showAllDays
+      ? WEEK_DAYS
+      : WEEK_DAYS.filter((day) => day.key === todayKey)
+    : [];
+  const formatTime = (value: string) => value.replace(":", ".");
+
+  // Diisi setelah mount supaya tidak terjadi hydration mismatch
+  useEffect(() => {
+    setNow(new Date());
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -395,12 +394,24 @@ export function CozyDashboard({
 
     if (activeTab === "settings") {
       return (
-        <ComingSoonSection
-          icon={Settings}
-          eyebrow="Branch Settings"
-          title="Pengaturan"
-          description={`Kelola pengaturan dan konfigurasi administrator untuk ${branchName}.`}
-        />
+        <div className="min-h-screen bg-[#F5F5F3]">
+          <CozyBranchSettings
+            initialData={{
+              name: branch?.name ?? "",
+              address: branch?.address ?? "",
+              phone: branch?.phone ?? "",
+              googleMapsUrl: branch?.googleMapsUrl ?? "",
+              weeklyOpeningHours: branchView?.weeklyOpeningHours,
+              openingTime: branchView?.openingTime,
+              closingTime: branchView?.closingTime,
+              partnerships: (branchView?.partnerships ?? []).map((partner) => ({
+                name: partner.name,
+                url: partner.url ?? "",
+              })),
+            }}
+            onSave={onSaveSettings}
+          />
+        </div>
       );
     }
 
@@ -628,6 +639,40 @@ export function CozyDashboard({
                 </div>
                 <p className="mt-2 break-words text-sm font-semibold text-neutral-900">{email}</p>
               </div>
+
+              <div className="rounded-xl bg-[#F5F5F3] p-4">
+                <div className="flex items-center gap-2 text-neutral-400">
+                  <Clock3 className="h-4 w-4" />
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.15em]">
+                    Status Operasional
+                  </span>
+                </div>
+                {openingStatus ? (
+                  <p
+                    className={`mt-2 text-sm font-semibold ${
+                      openingStatus.isOpen ? "text-emerald-700" : "text-red-700"
+                    }`}
+                  >
+                    {openingStatus.label} · {openingStatus.detail}
+                  </p>
+                ) : (
+                  <p className="mt-2 text-sm font-medium text-neutral-400">
+                    {schedule ? "Memuat status..." : "Jadwal belum diatur"}
+                  </p>
+                )}
+              </div>
+
+              <div className="rounded-xl bg-[#F5F5F3] p-4">
+                <div className="flex items-center gap-2 text-neutral-400">
+                  <Phone className="h-4 w-4" />
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.15em]">
+                    Nomor Kontak
+                  </span>
+                </div>
+                <p className="mt-2 text-sm font-semibold text-neutral-900">
+                  {branch?.phone || "Belum diatur"}
+                </p>
+              </div>
             </div>
 
             {branch?.googleMapsUrl && (
@@ -714,7 +759,7 @@ export function CozyDashboard({
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-neutral-900">Pengaturan</p>
                   <p className="mt-1 text-xs leading-5 text-neutral-500">
-                    Pengaturan cabang dan administrator.
+                    Jam operasional, kontak, dan media kerja sama.
                   </p>
                 </div>
                 <ChevronRight className="h-4 w-4 shrink-0 text-neutral-300 transition-transform group-hover:translate-x-1 group-hover:text-neutral-700" />
@@ -735,6 +780,124 @@ export function CozyDashboard({
                 </div>
               </div>
             </div>
+          </motion.article>
+        </section>
+
+        {/* Jadwal mingguan dan media kerjasama */}
+        <section className="mt-6 grid gap-6 lg:grid-cols-2">
+          <motion.article
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="rounded-2xl border border-black/[0.07] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.025)] sm:p-6"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <SectionTitle
+                eyebrow="Operating Hours"
+                title="Jadwal Mingguan"
+                description="Jam buka dan tutup cabang untuk setiap hari."
+              />
+
+              {schedule && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllDays((current) => !current)}
+                  aria-expanded={showAllDays}
+                  className="shrink-0 pt-1 text-xs font-semibold text-neutral-700 transition-colors hover:text-black"
+                >
+                  {showAllDays ? "Ringkas" : "Lihat semua"}
+                </button>
+              )}
+            </div>
+
+            {schedule ? (
+              <ul className="mt-6 space-y-2">
+                {visibleDays.map(({ key, label }) => {
+                  const day = schedule[key];
+                  const isToday = key === todayKey;
+
+                  return (
+                    <li
+                      key={key}
+                      className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 ${
+                        isToday
+                          ? "border-neutral-900/30 bg-neutral-100"
+                          : "border-black/[0.07] bg-[#F5F5F3]"
+                      }`}
+                    >
+                      <span className="text-sm font-semibold text-neutral-900">
+                        {label}
+                        {isToday && " (Hari ini)"}
+                      </span>
+
+                      <span
+                        className={`text-sm ${
+                          day.isOpen ? "font-medium text-neutral-800" : "text-neutral-400"
+                        }`}
+                      >
+                        {day.isOpen
+                          ? `${formatTime(day.open)} - ${formatTime(day.close)}`
+                          : "Tutup"}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="mt-6 rounded-xl border border-dashed border-black/10 px-4 py-5 text-center text-sm text-neutral-500">
+                Jadwal mingguan belum diatur.
+              </p>
+            )}
+
+            {schedule && !hasWeeklySchedule && (
+              <p className="mt-3 text-xs text-neutral-400">
+                Menampilkan jam operasional lama. Simpan jadwal mingguan di Pengaturan untuk
+                memperbarui.
+              </p>
+            )}
+          </motion.article>
+
+          <motion.article
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="rounded-2xl border border-black/[0.07] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.025)] sm:p-6"
+          >
+            <SectionTitle
+              eyebrow="Partnership"
+              title="Media Kerjasama"
+              description="Platform partner yang terhubung dengan cabang ini."
+            />
+
+            {partnerships.length > 0 ? (
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                {partnerships.map((partner) =>
+                  partner.url ? (
+                    <a
+                      key={`${partner.name}-${partner.url}`}
+                      href={partner.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-[#F5F5F3] px-3.5 py-2 text-xs font-medium text-neutral-800 transition-colors hover:bg-neutral-200"
+                    >
+                      {partner.name}
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  ) : (
+                    <span
+                      key={partner.name}
+                      className="inline-flex items-center rounded-full border border-black/10 bg-[#F5F5F3] px-3.5 py-2 text-xs font-medium text-neutral-800"
+                    >
+                      {partner.name}
+                    </span>
+                  ),
+                )}
+              </div>
+            ) : (
+              <p className="mt-6 rounded-xl border border-dashed border-black/10 px-4 py-5 text-center text-sm text-neutral-500">
+                Belum ada media kerja sama.
+              </p>
+            )}
           </motion.article>
         </section>
 
