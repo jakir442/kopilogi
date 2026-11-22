@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -7,6 +6,7 @@ import { User } from "@/features/users/models/user.model";
 import { getAdminBranchAccess } from "@/lib/auth/branch-access";
 import { requireAdmin } from "@/lib/auth/authorization";
 import { connectToDatabase } from "@/lib/mongodb";
+import { getAdminFaqData } from "@/features/faq/actions/faq.actions";
 
 export const metadata: Metadata = {
   title: "Pengaturan Super Admin | Kopilogi",
@@ -38,10 +38,14 @@ export default async function SuperAdminSettingsPage() {
     redirect("/login");
   }
 
+  const { faqs, categories } = await getAdminFaqData();
+
   return (
     <SuperAdminSettings
       name={user.name}
       email={user.email}
+      initialFaqs={faqs}
+      initialCategories={categories}
     />
   );
 }
