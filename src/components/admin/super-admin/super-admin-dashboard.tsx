@@ -256,7 +256,7 @@ export function SuperAdminDashboard({
               className='flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/55 transition-all hover:bg-white/[0.06] hover:text-white'
             >
               <Settings className='size-4 shrink-0' />
-              Pengaturan
+              Pengaturan FAQs
             </Link>
           </nav>
 
@@ -380,7 +380,7 @@ export function SuperAdminDashboard({
                   className='flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-black/60 transition-all duration-200 hover:bg-[#171715]/[0.06] hover:text-[#171715]'
                 >
                   <Settings className='size-4 shrink-0' />
-                  Pengaturan
+                  Pengaturan FAQs
                 </Link>
 
                 <button

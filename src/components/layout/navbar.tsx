@@ -30,7 +30,9 @@ const branches = [
 const navigation = [
   { label: "Beranda", href: "/#home" },
   { label: "Best Sellers", href: "/#best-sellers" },
+  { label: "FAQ", href: "/faq" },
 ];
+
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
