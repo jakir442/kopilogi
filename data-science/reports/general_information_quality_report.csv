@@ -1,0 +1,7 @@
+﻿check_id,aspect,finding,affected_records,decision
+GI001,Missing Values,Tidak ditemukan nilai kosong,0,Tidak diperlukan imputasi
+GI002,Duplicate ID,0 info_id duplikat,0,Tinjau jika ditemukan duplikasi
+GI003,Duplicate Topic,0 info_key duplikat,0,Periksa apakah topik berulang
+GI004,Content Completeness,0 konten kosong,0,Tidak mengarang konten pengganti
+GI005,PIC Verification,Informasi masih menunggu verifikasi PIC,9,Pertahankan status pending_pic
+GI006,Source Traceability,Referensi wawancara tercatat,9,Periksa kesesuaian konten dengan bukti wawancara

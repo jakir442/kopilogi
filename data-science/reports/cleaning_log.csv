@@ -1,0 +1,7 @@
+step,process,description,result
+1,Standardisasi nama kolom,Memastikan nama kolom menggunakan snake_case,Struktur nama kolom konsisten
+2,Standardisasi teks,Menghapus spasi awal dan akhir pada kolom teks,Format teks distandarkan
+3,Validasi harga,Memastikan harga numerik dan positif,183 harga valid secara format dan rentang
+4,Penanganan missing values,Mempertahankan nilai kosong pada best seller dan availability,Tidak dilakukan imputasi tanpa sumber
+5,Pengelompokan kategori,Memetakan 20 kategori asli ke empat kategori umum,183 record berhasil dipetakan
+6,Pemeriksaan duplikasi,Mempertahankan menu bernama sama yang berada pada kategori berbeda,Tidak ada record yang dihapus

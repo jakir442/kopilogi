@@ -1,0 +1,7 @@
+﻿step,process,description,result
+1,Standardisasi nama kolom,Memastikan nama kolom konsisten,Struktur kolom diperiksa
+2,Standardisasi teks,Menghapus spasi awal dan akhir,Format teks distandarkan
+3,Standardisasi tanggal,Mengubah accessed_at menjadi datetime,Tanggal valid secara format
+4,Validasi identitas,Memeriksa info_id dan info_key,Keunikan identitas diperiksa
+5,Mempertahankan status verifikasi,Tidak mengubah pending_pic tanpa bukti,Metadata verifikasi dipertahankan
+6,Pemeriksaan perubahan,Membandingkan nilai teks sebelum dan sesudah cleaning,Perubahan dicatat pada change_report

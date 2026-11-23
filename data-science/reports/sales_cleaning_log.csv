@@ -1,0 +1,8 @@
+﻿step,process,description
+1,Standardisasi nama kolom,Memastikan nama kolom konsisten
+2,Standardisasi teks,Menghapus spasi awal dan akhir
+3,Standardisasi tanggal dan waktu,Mengubah tanggal dan waktu ke format analisis
+4,Feature engineering,Menambahkan total_amount dari kuantitas dan harga
+5,Pengelompokan kategori,Memetakan kategori publik ke kelompok analisis
+6,Metadata,Menambahkan label public dan identitas sumber
+7,Validasi,"Memeriksa jumlah record, harga, kuantitas, dan kategori"

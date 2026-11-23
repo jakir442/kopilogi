@@ -1,0 +1,5 @@
+category_group,jumlah_menu,harga_minimum,harga_median,harga_rata_rata,harga_maksimum
+package,2,15000,17500.0,17500.0,20000
+dessert,6,18500,20500.0,21500.0,25500
+beverage,110,10000,21500.0,24009.09,130500
+food,65,12500,23500.0,24315.38,40500

@@ -1,0 +1,3 @@
+﻿response_id,submitted_at,respondent_type,information_needed,main_information,preferred_platform,information_difficulty,website_expectation,additional_feedback,consent,data_type,consent_bool
+R001,2026-11-01,Pernah,"Jam Operasional, Lokasi, Fasilitas, Harga, Menu",Harga,Google Maps,2,Kontak WhatsApp atau media sosial agar pelanggan mudah menghubungi Kopilogi.,Menu favorit atau best seller bisa diberi penanda khusus.,Setuju,actual,True
+R002,2026-11-01,Pernah,"Promo/Event, Jam Operasional",Harga,Instagram,3,Fitur Ask AI untuk menjawab pertanyaan pelanggan secara real time.,Tampilan website dibuat sederhana dan tidak membingungkan.,Setuju,actual,True

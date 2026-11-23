@@ -1,0 +1,5 @@
+﻿dataset,check_name,status,details
+branches,Verifikasi PIC,REVIEW,Seluruh cabang masih memerlukan konfirmasi informasi operasional
+general_information,Verifikasi sumber,REVIEW,Kesesuaian isi informasi dengan bukti wawancara perlu diperiksa
+survey,Keterbatasan respons aktual,REVIEW,Hanya tersedia dua respons aktual; tidak representatif
+sales_public,Lisensi dataset,REVIEW,Lisensi dan sumber asli Kaggle belum dikonfirmasi

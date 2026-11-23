@@ -1,0 +1,6 @@
+issue_id,column,issue,affected_records,action,status
+BQ001,grabfood_url,Tiga nilai kosong,3,Pertahankan kosong sampai tersedia sumber,pending
+BQ002,verification_status,Seluruh cabang menunggu verifikasi PIC,3,Konfirmasi informasi kepada pihak Kopilogi,pending
+BQ003,"opening_time, closing_time",Format waktu perlu disiapkan untuk CSV/JSON,3,Standardisasi menjadi HH:mm,planned
+BQ004,"branch_name, city",Penulisan menggunakan huruf kapital,3,Standardisasi format tampilan,planned
+BQ005,url_columns,Tujuan tautan belum diperiksa,9,Lakukan pemeriksaan manual setiap tautan,pending

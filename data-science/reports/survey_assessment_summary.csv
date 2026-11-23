@@ -1,0 +1,7 @@
+﻿metric,value
+total_responses,100
+actual_responses,2
+dummy_responses,98
+duplicate_response_id,0
+duplicate_rows,0
+missing_cells,1

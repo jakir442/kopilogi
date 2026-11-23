@@ -1,0 +1,8 @@
+﻿check_id,aspect,finding,affected_records,decision
+SQ001,Missing Values,Tidak ditemukan nilai kosong,0,Tidak diperlukan imputasi
+SQ002,Duplicate Records,Tidak ditemukan duplikasi seluruh baris,0,Tidak menghapus record
+SQ003,Price Validation,Harga bernilai positif,0,Mempertahankan harga asli
+SQ004,Quantity Validation,Kuantitas bernilai positif,0,Mempertahankan kuantitas asli
+SQ005,Product Price Variation,15 product_id memiliki variasi harga,15,Mempertahankan variasi harga
+SQ006,Transaction Time,Waktu tersimpan sebagai datetime.time,149116,Standardisasi format HH:mm:ss
+SQ007,Data Source,Lisensi dan sumber asli belum dikonfirmasi,149116,Periksa metadata sumber sebelum publikasi

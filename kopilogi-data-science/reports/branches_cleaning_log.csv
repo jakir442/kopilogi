@@ -1,0 +1,6 @@
+﻿step,process,description,result
+1,Standardisasi nama cabang,Mengubah kapitalisasi nama cabang untuk tampilan,Nama cabang menggunakan format title case
+2,Standardisasi nama kota,Mengubah kapitalisasi kota menjadi title case,Penulisan kota konsisten
+3,Standardisasi jam operasional,Mengubah objek datetime.time menjadi format HH:mm,Jam siap diekspor ke CSV/JSON
+4,Penanganan missing values,Mempertahankan GrabFood kosong karena belum ada sumber,Tidak dilakukan imputasi
+5,Validasi,"Memeriksa jumlah record, ID, format jam, dan status verifikasi",Validasi struktur berhasil
