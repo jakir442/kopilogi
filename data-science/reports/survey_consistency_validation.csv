@@ -1,0 +1,3 @@
+﻿response_id,information_needed,main_information,main_info_consistent
+R001,"Jam Operasional, Lokasi, Fasilitas, Harga, Menu",Harga,True
+R002,"Promo/Event, Jam Operasional",Harga,False

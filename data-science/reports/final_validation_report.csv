@@ -1,0 +1,27 @@
+﻿dataset,check_name,status,details
+menu,Jumlah record,PASS,Jumlah record: 183
+menu,Keunikan menu_id,PASS,Pemeriksaan ID menu
+menu,Harga positif,PASS,Seluruh harga harus positif
+menu,Kategori umum lengkap,PASS,Tidak boleh ada kategori umum kosong
+menu,Relasi branch_id,PASS,Menu dengan branch_id tidak valid: 0
+branches,Jumlah cabang,PASS,Jumlah cabang: 3
+branches,Keunikan branch_id,PASS,ID cabang harus unik
+branches,Format opening_time,PASS,Jumlah format tidak valid: 0
+branches,Format closing_time,PASS,Jumlah format tidak valid: 0
+branches,Verifikasi PIC,REVIEW,Seluruh cabang masih memerlukan konfirmasi informasi operasional
+general_information,Jumlah record,PASS,Jumlah record: 9
+general_information,Keunikan info_id,PASS,ID informasi harus unik
+general_information,Keunikan info_key,PASS,Topik informasi harus unik
+general_information,Kelengkapan konten,PASS,Konten kosong: 0
+general_information,Verifikasi sumber,REVIEW,Kesesuaian isi informasi dengan bukti wawancara perlu diperiksa
+survey,Jumlah respons,PASS,Total: 100
+survey,Label actual,PASS,Dataset actual hanya berisi respons nyata
+survey,Label dummy,PASS,Dataset dummy hanya berisi simulasi
+survey,Tidak ada ID tumpang tindih,PASS,Jumlah ID tumpang tindih: 0
+survey,Keterbatasan respons aktual,REVIEW,Hanya tersedia dua respons aktual; tidak representatif
+sales_public,Jumlah record,PASS,Jumlah record: 149116
+sales_public,Harga positif,PASS,Harga harus positif
+sales_public,Kuantitas positif,PASS,Kuantitas harus positif
+sales_public,Konsistensi total_amount,PASS,Nilai transaksi sesuai kuantitas dikali harga
+sales_public,Label public,PASS,Dataset tidak boleh berlabel actual Kopilogi
+sales_public,Lisensi dataset,REVIEW,Lisensi dan sumber asli Kaggle belum dikonfirmasi

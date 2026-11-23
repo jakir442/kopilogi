@@ -1,0 +1,8 @@
+﻿step,process,description
+1,Standardisasi teks,Menghapus spasi awal dan akhir pada kolom teks
+2,Standardisasi data_type,Menyeragamkan penulisan label actual dan dummy
+3,Standardisasi consent,Membuat consent_bool dari jawaban consent
+4,Validasi skala,Memeriksa information_difficulty pada rentang 1-5
+5,Pemisahan dataset,Memisahkan respons actual dan dummy
+6,Penanganan missing values,Mempertahankan additional_feedback kosong karena opsional
+7,Koreksi metadata,"Menggunakan label asal terbaru: 2 actual dan 98 dummy, berdasarkan catatan pengumpulan"
