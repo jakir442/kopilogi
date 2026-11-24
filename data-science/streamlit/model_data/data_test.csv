@@ -1,0 +1,38 @@
+menu_id,menu_name,description,teks_gabungan,category
+M093,NYOKLAT OVALTINE,Minuman cokelat dengan varian Ovaltine.,NYOKLAT OVALTINE Minuman cokelat dengan varian Ovaltine.,Minuman (Non Kopi)
+M130,Salted Egg,Sayap ayam dengan saus telur asin.,Salted Egg Sayap ayam dengan saus telur asin.,Wings Platter
+M116,Sosis solo,Camilan khas berupa sosis solo dengan isian dan kulit pembungkus.,Sosis solo Camilan khas berupa sosis solo dengan isian dan kulit pembungkus.,Opieun
+M151,Freefrapp Salted Caramel,Minuman frappé dengan rasa salted caramel.,Freefrapp Salted Caramel Minuman frappé dengan rasa salted caramel.,Freefrapp
+M036,Es Kopilogi Jelly Cafe,Minuman Es Kopilogi dengan varian Jelly Cafe.,Es Kopilogi Jelly Cafe Minuman Es Kopilogi dengan varian Jelly Cafe.,Es Kopilogi
+M132,Hot Peanut,Pasta dengan saus kacang bercita rasa pedas.,Hot Peanut Pasta dengan saus kacang bercita rasa pedas.,Pasta
+M003,Salted Egg,Hidangan wings platter dengan saus bercita rasa telur asin yang gurih.,Salted Egg Hidangan wings platter dengan saus bercita rasa telur asin yang gurih.,Wings Platter
+M154,Freefrapp Berry Cheese Cake,Minuman frappé dengan varian rasa berry cheesecake.,Freefrapp Berry Cheese Cake Minuman frappé dengan varian rasa berry cheesecake.,Freefrapp
+M012,Tahu Cabe Garam,"Olahan tahu dengan perpaduan rasa gurih, asin, dan pedas.","Tahu Cabe Garam Olahan tahu dengan perpaduan rasa gurih, asin, dan pedas.",Bites & Fries
+M137,Mala Chicken Pasta,Pasta dengan ayam dan bumbu mala bercita rasa pedas.,Mala Chicken Pasta Pasta dengan ayam dan bumbu mala bercita rasa pedas.,Pasta
+M107,Tape aroma,Camilan berbahan tape dengan penyajian khas tape aroma.,Tape aroma Camilan berbahan tape dengan penyajian khas tape aroma.,Opieun
+M091,MANUAL BREW,Minuman kopi yang diseduh menggunakan metode manual brewing.,MANUAL BREW Minuman kopi yang diseduh menggunakan metode manual brewing.,Minuman (Koplog)
+M169,Orange-Ji Brew,Minuman racikan brew dengan varian rasa jeruk.,Orange-Ji Brew Minuman racikan brew dengan varian rasa jeruk.,Non/Coffee & Tonic
+M110,Siomay dimsum,Camilan siomay dengan gaya penyajian dimsum.,Siomay dimsum Camilan siomay dengan gaya penyajian dimsum.,Opieun
+M069,Nasi ayam goreng mentega,Hidangan nasi dengan lauk ayam goreng bercita rasa mentega.,Nasi ayam goreng mentega Hidangan nasi dengan lauk ayam goreng bercita rasa mentega.,Nasi
+M013,French Fries,Kentang goreng yang disajikan sebagai camilan atau makanan pendamping.,French Fries Kentang goreng yang disajikan sebagai camilan atau makanan pendamping.,Bites & Fries
+M179,Cafe Latte,Minuman espresso dengan campuran susu.,Cafe Latte Minuman espresso dengan campuran susu.,Base Espresso
+M149,Ubi Goreng,Ubi yang digoreng sebagai camilan.,Ubi Goreng Ubi yang digoreng sebagai camilan.,Sweet Treats
+M040,Green Tea Latte,Minuman latte dengan perpaduan cita rasa teh hijau dan susu.,Green Tea Latte Minuman latte dengan perpaduan cita rasa teh hijau dan susu.,Non/Coffee & Tonic
+M081,Mie tek-tek,Hidangan mi dengan gaya penyajian khas mie tek-tek.,Mie tek-tek Hidangan mi dengan gaya penyajian khas mie tek-tek.,Indomie Series
+M065,Nasi kremes sambal cumi,Hidangan nasi kremes dengan tambahan sambal cumi.,Nasi kremes sambal cumi Hidangan nasi kremes dengan tambahan sambal cumi.,Nasi
+M018,Buldak Chicken Fries,Kentang goreng dengan perpaduan ayam dan cita rasa pedas khas buldak.,Buldak Chicken Fries Kentang goreng dengan perpaduan ayam dan cita rasa pedas khas buldak.,Bites & Fries
+M160,Kopipora Original,Minuman Kopipora dengan varian rasa original.,Kopipora Original Minuman Kopipora dengan varian rasa original.,Kopipora
+M120,KOPLOG GREENTEA,Minuman Koplog dengan cita rasa green tea dalam pilihan paket Ngopay.,KOPLOG GREENTEA Minuman Koplog dengan cita rasa green tea dalam pilihan paket Ngopay.,Ngopay (Ngopi bari mayan)
+M074,Nasi goreng jadool,Nasi goreng dengan varian khas Jadool.,Nasi goreng jadool Nasi goreng dengan varian khas Jadool.,Nasi
+M071,Nasi ayam serundeng,Hidangan nasi yang disajikan dengan ayam dan serundeng.,Nasi ayam serundeng Hidangan nasi yang disajikan dengan ayam dan serundeng.,Nasi
+M096,TEH SEREH,Minuman teh dengan tambahan sereh sebagai varian cita rasa.,TEH SEREH Minuman teh dengan tambahan sereh sebagai varian cita rasa.,Minuman (Teh)
+M118,KOPLOG HITAM,Minuman Koplog varian hitam dengan karakter rasa kopi dalam pilihan paket Ngopay.,KOPLOG HITAM Minuman Koplog varian hitam dengan karakter rasa kopi dalam pilihan paket Ngopay.,Ngopay (Ngopi bari mayan)
+M027,Freefrapp Berry Cheese Cake,Minuman Freefrapp dengan perpaduan cita rasa berry dan cheesecake.,Freefrapp Berry Cheese Cake Minuman Freefrapp dengan perpaduan cita rasa berry dan cheesecake.,Freefrapp
+M087,KOPLOG SUSU BUTTER,Minuman Koplog dengan perpaduan susu dan cita rasa butter.,KOPLOG SUSU BUTTER Minuman Koplog dengan perpaduan susu dan cita rasa butter.,Minuman (Koplog)
+M054,Cappuccino,Minuman kopi berbasis espresso dengan perpaduan susu dan foam.,Cappuccino Minuman kopi berbasis espresso dengan perpaduan susu dan foam.,Base Espresso
+M102,LIMUN BERRY CHIE,Minuman limun dengan varian rasa Berry Chie.,LIMUN BERRY CHIE Minuman limun dengan varian rasa Berry Chie.,Minuman (Limun)
+M139,Tahu Cabe Garam,Potongan tahu yang disajikan dengan bumbu cabai dan garam.,Tahu Cabe Garam Potongan tahu yang disajikan dengan bumbu cabai dan garam.,Bites & Fries
+M056,Gemon 1L,Minuman Gemon dalam kemasan berukuran 1 liter.,Gemon 1L Minuman Gemon dalam kemasan berukuran 1 liter.,Bottled Coffee
+M161,Es Kopilogi Original,Minuman dingin khas Kopilogi dengan varian original.,Es Kopilogi Original Minuman dingin khas Kopilogi dengan varian original.,Es Kopilogi
+M171,Bikini Better,Minuman mocktail dengan racikan rasa khas.,Bikini Better Minuman mocktail dengan racikan rasa khas.,Mocktail Shaken
+M172,Better Bear,Minuman mocktail dengan racikan rasa khas.,Better Bear Minuman mocktail dengan racikan rasa khas.,Mocktail Shaken
