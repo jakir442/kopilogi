@@ -1,0 +1,10 @@
+﻿info_id,info_key,title,content,source,verification_status
+INF001,business_history,Sejarah Kopilogi,"Kopilogi memulai usaha pada tahun 2015 sebagai angkringan, sempat berpindah ke food market Sehati, kemudian berkembang menjadi coffee shop pada tahun 2017.",wawancara,pending_pic
+INF002,business_profile,Profil Kopilogi,Kopilogi merupakan usaha bidang makanan dan minuman yang memiliki tiga cabang aktif di Garut dan Tasikmalaya.,wawancara,pending_pic
+INF003,product_types,Jenis Produk,"Kopilogi menyediakan makanan, minuman, dessert, dan pastry.",wawancara,pending_pic
+INF004,ordering_channels,Layanan Pemesanan,Pelanggan dapat melakukan pemesanan langsung di kasir atau menggunakan GoFood dan GrabFood.,wawancara,pending_pic
+INF005,social_media,Media Sosial,Kopilogi menggunakan Instagram dan TikTok sebagai media promosi.,wawancara,pending_pic
+INF006,business_branches,Cabang Kopilogi,"Kopilogi memiliki tiga cabang aktif, yaitu Kopilogi Cikuray, Waroeng Kopilogi, dan Kopilogi Tasik. Kopilogi Halway telah tutup permanen.",wawancara,pending_pic
+INF007,ordering_process,Proses Pemesanan,"Pelanggan melakukan pemesanan langsung di kasir, kemudian pesanan diantarkan oleh pelayan.",wawancara,pending_pic
+INF008,payment_methods,Metode Pembayaran,"Pembayaran langsung di kasir dapat dilakukan menggunakan uang tunai, kartu debit, dan QRIS.",wawancara,pending_pic
+INF009,website_purpose,Tujuan Website,"Website Kopilogi dikembangkan sebagai pusat informasi resmi untuk menyajikan profil usaha, informasi cabang, katalog menu, lokasi, dan layanan pelanggan.",wawancara,pending_pic
