@@ -2,8 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@import "tailwindcss";
-
 /* =========================================================
    KOPILOGI — GLOBAL DEFAULT
    Tema default: Industrial Monochrome (Cabang 1)
@@ -895,14 +893,13 @@ html.super-admin-theme::-webkit-scrollbar-corner {
   }
 }
 
-
 /* =========================================
    BRANCH PAGE SCROLLBAR THEMES, detail menu
    ========================================= */
 
 /* Cabang 1 — Modern Futuristic */
 html.modern-theme {
-  scrollbar-color: #C5F467 #30362E;
+  scrollbar-color: #c5f467 #30362e;
   scrollbar-width: thin;
 }
 
@@ -911,17 +908,17 @@ html.modern-theme::-webkit-scrollbar {
 }
 
 html.modern-theme::-webkit-scrollbar-track {
-  background: #30362E;
+  background: #30362e;
 }
 
 html.modern-theme::-webkit-scrollbar-thumb {
-  background: #C5F467;
+  background: #c5f467;
   border-radius: 9999px;
 }
 
 /* Cabang 2 — Traditional Heritage */
 html.heritage-theme {
-  scrollbar-color: #9D482C #D9C6A8;
+  scrollbar-color: #9d482c #d9c6a8;
   scrollbar-width: thin;
 }
 
@@ -930,17 +927,17 @@ html.heritage-theme::-webkit-scrollbar {
 }
 
 html.heritage-theme::-webkit-scrollbar-track {
-  background: #D9C6A8;
+  background: #d9c6a8;
 }
 
 html.heritage-theme::-webkit-scrollbar-thumb {
-  background: #9D482C;
+  background: #9d482c;
   border-radius: 9999px;
 }
 
 /* Cabang 4 — Contemporary Cozy */
 html.cozy-theme {
-  scrollbar-color: #C17B52 #DED6C9;
+  scrollbar-color: #c17b52 #ded6c9;
   scrollbar-width: thin;
 }
 
@@ -949,14 +946,50 @@ html.cozy-theme::-webkit-scrollbar {
 }
 
 html.cozy-theme::-webkit-scrollbar-track {
-  background: #DED6C9;
+  background: #ded6c9;
 }
 
 html.cozy-theme::-webkit-scrollbar-thumb {
-  background: #C17B52;
+  background: #c17b52;
   border-radius: 9999px;
 }
 
+/* =========================================================
+   KOPILOGI — GLOBAL SCROLLBAR
+   Warm neutral untuk login, lupa password, dan dashboard
+========================================================= */
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #c7b49d #faf8f4;
+}
+
+html::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html::-webkit-scrollbar-track {
+  background: #faf8f4;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: #c7b49d;
+  border: 2px solid #faf8f4;
+  border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: #a58a6c;
+}
+
+html::-webkit-scrollbar-thumb:active {
+  background: #8b6845;
+}
+
+html::-webkit-scrollbar-corner {
+  background: #faf8f4;
+}
 
 @theme inline {
   --color-background: var(--background);

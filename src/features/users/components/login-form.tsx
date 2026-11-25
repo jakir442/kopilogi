@@ -124,7 +124,12 @@ export function LoginForm() {
               Password
             </label>
 
-            <span className="text-[11px] text-[#a09689]">Jaga kerahasiaannya</span>
+            <Link
+              href="/forgot-password"
+              className="text-xs font-semibold text-[#8b6845] transition-colors hover:text-[#493323] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#96704b] focus-visible:ring-offset-2 rounded-sm"
+            >
+              Lupa password?
+            </Link>
           </div>
 
           <div className="group relative">
