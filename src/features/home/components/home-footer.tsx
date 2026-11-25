@@ -24,6 +24,10 @@ const navigation = [
     label: "Lokasi",
     href: "#locations",
   },
+  {
+    label: "FAQ",
+    href: "/faq",
+  },
 ];
 
 const locations = ["Kopilogi Cikuray", "Waroeng Kopilogi", "Kopilogi Tasik"];
