@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Box, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Container } from "@/components/layout/container";
@@ -34,6 +34,7 @@ const slides = [
 
 export function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [show3DViewer, setShow3DViewer] = useState(false);
 
   const activeSlide = slides[activeIndex];
 
@@ -45,152 +46,239 @@ export function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
+  // Menutup modal menggunakan tombol Escape.
+  useEffect(() => {
+    if (!show3DViewer) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShow3DViewer(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Mencegah halaman di belakang modal ikut bergulir.
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [show3DViewer]);
+
   return (
-    <section className="relative min-h-[100svh] overflow-hidden bg-black text-white">
-      {/* Background images */}
-      <div className="absolute inset-0">
-        <AnimatePresence mode="sync">
-          <motion.div
-            key={activeSlide.id}
-            initial={{ opacity: 0, scale: 1.06 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{
-              opacity: { duration: 1.2, ease: "easeInOut" },
-              scale: { duration: 6, ease: "linear" },
-            }}
-            className="absolute inset-0"
-          >
-            <Image
-              src={activeSlide.image}
-              alt={activeSlide.name}
-              fill
-              priority={activeIndex === 0}
-              className="object-cover"
-              sizes="100vw"
-            />
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Dark cinematic overlay */}
-        <div className="absolute inset-0 bg-black/35" />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/25" />
-
-        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/20 to-transparent" />
-      </div>
-
-      <Container className="relative z-10 flex min-h-[100svh] flex-col justify-between py-28 md:py-32">
-        {/* Top label */}
-        <motion.div
-          initial={{ opacity: 0, y: -15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="flex items-center gap-3"
-        >
-          <span className="h-px w-8 bg-white/70" />
-
-          <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-white/80">
-            Coffee, food & good moments
-          </span>
-        </motion.div>
-
-        {/* Main content */}
-        <div className="max-w-3xl pb-8 md:pb-4">
-          <AnimatePresence mode="wait">
+    <>
+      <section className="relative min-h-[100svh] overflow-hidden bg-black text-white">
+        {/* Background images */}
+        <div className="absolute inset-0">
+          <AnimatePresence mode="sync">
             <motion.div
               key={activeSlide.id}
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              initial={{ opacity: 0, scale: 1.06 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                opacity: { duration: 1.2, ease: "easeInOut" },
+                scale: { duration: 6, ease: "linear" },
+              }}
+              className="absolute inset-0"
             >
-              <p className="mb-4 text-xs font-medium uppercase tracking-[0.25em] text-white/65">
-                {activeSlide.branch} · {activeSlide.city}
-              </p>
-
-              <h1 className="max-w-2xl text-5xl font-semibold leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-7xl lg:text-[88px]">
-                Tempat untuk
-                <br />
-                menikmati cerita.
-              </h1>
-
-              <p className="mt-6 max-w-md text-sm leading-6 text-white/75 md:text-base">
-                Temukan cabang, suasana, dan favoritmu di Kopilogi.
-              </p>
-
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link
-                  href={`/${activeSlide.id}`}
-                  className="group inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition-transform duration-300 hover:scale-[1.03]"
-                >
-                  Temukan Cabang
-
-                  <span className="flex size-7 items-center justify-center rounded-full bg-black text-white transition-transform duration-300 group-hover:rotate-45">
-                    <ArrowUpRight className="size-4" />
-                  </span>
-                </Link>
-
-                <Link
-                  href="#locations"
-                  className="hidden rounded-full border border-white/25 px-5 py-3 text-sm font-medium text-white/90 backdrop-blur-sm transition-colors hover:bg-white/10 sm:inline-flex"
-                >
-                  Lihat semua cabang
-                </Link>
-              </div>
+              <Image
+                src={activeSlide.image}
+                alt={activeSlide.name}
+                fill
+                priority={activeIndex === 0}
+                className="object-cover"
+                sizes="100vw"
+              />
             </motion.div>
           </AnimatePresence>
+
+          {/* Dark cinematic overlay */}
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/20 to-transparent" />
         </div>
 
-        {/* Bottom navigation */}
-        <div className="flex items-end justify-between gap-6">
-          {/* Slide indicators */}
-          <div className="flex items-center gap-2">
-            {slides.map((slide, index) => (
-              <button
-                key={slide.id}
-                type="button"
-                onClick={() => setActiveIndex(index)}
-                aria-label={`Pilih ${slide.name}`}
-                className="group flex items-center gap-2"
-              >
-                <span
-                  className={`h-0.5 transition-all duration-500 ${
-                    index === activeIndex
-                      ? "w-10 bg-white"
-                      : "w-5 bg-white/35 group-hover:bg-white/60"
-                  }`}
-                />
+        <Container className="relative z-10 flex min-h-[100svh] flex-col justify-between py-28 md:py-32">
+          {/* Top label */}
+          <motion.div
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="flex items-center gap-3"
+          >
+            <span className="h-px w-8 bg-white/70" />
 
-                <span
-                  className={`hidden text-[10px] uppercase tracking-[0.2em] transition-colors md:block ${
-                    index === activeIndex
-                      ? "text-white"
-                      : "text-white/40"
-                  }`}
-                >
-                  {slide.branch}
-                </span>
-              </button>
-            ))}
+            <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-white/80">
+              Coffee, food &amp; good moments
+            </span>
+          </motion.div>
+
+          {/* Main content */}
+          <div className="max-w-3xl pb-8 md:pb-4">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeSlide.id}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+              >
+                <p className="mb-4 text-xs font-medium uppercase tracking-[0.25em] text-white/65">
+                  {activeSlide.branch} · {activeSlide.city}
+                </p>
+
+                <h1 className="max-w-2xl text-5xl font-semibold leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-7xl lg:text-[88px]">
+                  Tempat untuk
+                  <br />
+                  menikmati cerita.
+                </h1>
+
+                <p className="mt-6 max-w-md text-sm leading-6 text-white/75 md:text-base">
+                  Temukan cabang, suasana, dan favoritmu di Kopilogi. Jelajahi juga visualisasi
+                  produk dalam pengalaman 3D interaktif.
+                </p>
+
+                {/* Action buttons */}
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <Link
+                    href={`/${activeSlide.id}`}
+                    className="group inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition-transform duration-300 hover:scale-[1.03]"
+                  >
+                    Temukan Cabang
+                    <span className="flex size-7 items-center justify-center rounded-full bg-black text-white transition-transform duration-300 group-hover:rotate-45">
+                      <ArrowUpRight className="size-4" />
+                    </span>
+                  </Link>
+
+                  {/* Open 3D viewer modal */}
+                  <button
+                    type="button"
+                    onClick={() => setShow3DViewer(true)}
+                    aria-haspopup="dialog"
+                    className="group inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 py-3 text-sm font-medium text-white backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:border-white/60 hover:bg-white/15"
+                  >
+                    <Box className="size-4 transition-transform duration-300 group-hover:rotate-12" />
+                    Lihat Produk 3D
+                    <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </button>
+
+                  <Link
+                    href="#locations"
+                    className="hidden rounded-full border border-white/25 px-5 py-3 text-sm font-medium text-white/90 backdrop-blur-sm transition-colors hover:bg-white/10 sm:inline-flex"
+                  >
+                    Lihat semua cabang
+                  </Link>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          {/* Scroll indicator */}
-          <motion.a
-            href="#best-sellers"
+          {/* Bottom navigation */}
+          <div className="flex items-end justify-between gap-6">
+            {/* Slide indicators */}
+            <div className="flex items-center gap-2">
+              {slides.map((slide, index) => (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  aria-label={`Pilih ${slide.name}`}
+                  aria-current={index === activeIndex ? "true" : undefined}
+                  className="group flex items-center gap-2"
+                >
+                  <span
+                    className={`h-0.5 transition-all duration-500 ${
+                      index === activeIndex
+                        ? "w-10 bg-white"
+                        : "w-5 bg-white/35 group-hover:bg-white/60"
+                    }`}
+                  />
+
+                  <span
+                    className={`hidden text-[10px] uppercase tracking-[0.2em] transition-colors md:block ${
+                      index === activeIndex ? "text-white" : "text-white/40"
+                    }`}
+                  >
+                    {slide.branch}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Scroll indicator */}
+            <motion.a
+              href="#best-sellers"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
+              className="group flex items-center gap-3 text-[10px] uppercase tracking-[0.25em] text-white/60"
+            >
+              <span className="hidden sm:block">Scroll to explore</span>
+
+              <span className="flex size-10 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm transition-colors group-hover:bg-white/10">
+                <ArrowDown className="size-4 animate-bounce" />
+              </span>
+            </motion.a>
+          </div>
+        </Container>
+      </section>
+
+      {/* 3D product viewer modal */}
+      <AnimatePresence>
+        {show3DViewer && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-3 backdrop-blur-md sm:p-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.8 }}
-            className="group flex items-center gap-3 text-[10px] uppercase tracking-[0.25em] text-white/60"
+            exit={{ opacity: 0 }}
+            onClick={() => setShow3DViewer(false)}
           >
-            <span className="hidden sm:block">Scroll to explore</span>
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="kopilogi-3d-title"
+              className="relative h-[88dvh] w-full max-w-6xl overflow-hidden rounded-2xl border border-white/15 bg-[#1D1F20] shadow-2xl"
+              initial={{ opacity: 0, scale: 0.96, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              {/* Modal header */}
+              <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#1D1F20]/90 px-4 py-3 backdrop-blur-md">
+                <div>
+                  <h2 id="kopilogi-3d-title" className="text-sm font-semibold text-white">
+                    Ice Kopilogi
+                  </h2>
 
-            <span className="flex size-10 items-center justify-center rounded-full border border-white/20 backdrop-blur-sm transition-colors group-hover:bg-white/10">
-              <ArrowDown className="size-4 animate-bounce" />
-            </span>
-          </motion.a>
-        </div>
-      </Container>
-    </section>
+                  <p className="mt-0.5 text-xs text-white/60">Visualisasi produk interaktif 3D</p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShow3DViewer(false)}
+                  aria-label="Tutup viewer 3D"
+                  className="flex size-9 items-center justify-center rounded-full border border-white/15 text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+
+              {/* Three.js viewer */}
+              <iframe
+                src="/produk-3d-viewer.html"
+                title="Visualisasi 3D Ice Kopilogi"
+                className="h-full w-full border-0"
+                allow="fullscreen"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
