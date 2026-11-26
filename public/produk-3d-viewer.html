@@ -1,0 +1,1726 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#17120f" />
+    <meta
+      name="description"
+      content="Jelajahi Ice Kopilogi dalam pengalaman visualisasi produk 3D interaktif."
+    />
+    <title>Ice Kopilogi — 3D Experience</title>
+
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #17120f;
+        --panel: rgba(35, 27, 22, 0.78);
+        --panel-strong: rgba(28, 21, 17, 0.94);
+        --border: rgba(244, 218, 192, 0.13);
+        --text: #f8eee4;
+        --muted: #ad9a89;
+        --accent: #d6a574;
+        --accent-light: #f0c99f;
+        --green: #a7c5a0;
+        --danger: #e5a09a;
+        --radius: 20px;
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+        --safe-top: env(safe-area-inset-top, 0px);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        overscroll-behavior: none;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      button:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--accent-light);
+        outline-offset: 4px;
+      }
+
+      #experience {
+        position: fixed;
+        inset: 0;
+        isolation: isolate;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse at 50% 39%, rgba(113, 75, 48, 0.28), transparent 37%),
+          radial-gradient(ellipse at 50% 75%, rgba(81, 46, 29, 0.24), transparent 44%),
+          linear-gradient(145deg, #251a14 0%, #17120f 46%, #100d0b 100%);
+      }
+
+      #experience::before,
+      #experience::after {
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+        content: "";
+      }
+
+      #experience::before {
+        inset: 0;
+        opacity: 0.2;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+        mix-blend-mode: soft-light;
+      }
+
+      #experience::after {
+        inset: 0;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(12, 9, 7, 0.2),
+            transparent 24%,
+            transparent 70%,
+            rgba(10, 8, 6, 0.3)
+          ),
+          radial-gradient(ellipse at center, transparent 40%, rgba(7, 5, 4, 0.28) 100%);
+      }
+
+      #webgl {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+
+      #webgl canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+        outline: none;
+      }
+
+      /* Header */
+
+      .topbar {
+        position: absolute;
+        z-index: 5;
+        top: calc(22px + var(--safe-top));
+        left: 28px;
+        right: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        pointer-events: none;
+      }
+
+      .brand,
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        pointer-events: auto;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 43px;
+        height: 43px;
+        flex: 0 0 auto;
+        place-items: center;
+        border: 1px solid rgba(214, 165, 116, 0.3);
+        border-radius: 15px;
+        background: linear-gradient(145deg, rgba(214, 165, 116, 0.16), rgba(214, 165, 116, 0.035));
+        color: var(--accent-light);
+        font-family: Georgia, serif;
+        font-size: 23px;
+        font-style: italic;
+      }
+
+      .brand-copy {
+        display: grid;
+        gap: 3px;
+      }
+
+      .brand-name {
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 750;
+        letter-spacing: 0.17em;
+      }
+
+      .brand-subtitle {
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 0.19em;
+        text-transform: uppercase;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 35px;
+        padding: 0 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(23, 18, 15, 0.54);
+        color: #d8c9bb;
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 10px rgba(167, 197, 160, 0.45);
+      }
+
+      .icon-button {
+        display: inline-grid;
+        width: 40px;
+        height: 40px;
+        flex: 0 0 auto;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: rgba(31, 24, 19, 0.68);
+        color: var(--text);
+        cursor: pointer;
+        transition:
+          background 180ms ease,
+          border-color 180ms ease,
+          transform 180ms ease;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .icon-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(214, 165, 116, 0.4);
+        background: rgba(214, 165, 116, 0.12);
+      }
+
+      .icon-button svg {
+        width: 17px;
+        height: 17px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Product information */
+
+      .product-info {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        left: clamp(24px, 5.2vw, 88px);
+        width: min(275px, 30vw);
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 19px;
+        color: var(--accent-light);
+        font-size: 9px;
+        font-weight: 650;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 23px;
+        height: 1px;
+        background: var(--accent);
+        content: "";
+      }
+
+      .product-title {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(39px, 4.6vw, 68px);
+        font-weight: 400;
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+      }
+
+      .product-title em {
+        color: var(--accent-light);
+        font-weight: 400;
+      }
+
+      .product-description {
+        max-width: 240px;
+        margin: 20px 0 0;
+        color: #c2b2a4;
+        font-size: 12px;
+        line-height: 1.9;
+      }
+
+      .product-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 22px;
+      }
+
+      .meta-chip {
+        padding: 7px 10px;
+        border: 1px solid rgba(244, 218, 192, 0.12);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.025);
+        color: #cdbba9;
+        font-size: 9px;
+        letter-spacing: 0.04em;
+      }
+
+      /* Interaction hints */
+
+      .interaction-hint {
+        position: absolute;
+        z-index: 2;
+        bottom: 34px;
+        left: 50%;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        transform: translateX(-50%);
+        color: rgba(231, 211, 191, 0.62);
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      .hint-icon {
+        display: grid;
+        width: 32px;
+        height: 32px;
+        place-items: center;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        background: rgba(25, 19, 15, 0.48);
+      }
+
+      .hint-icon svg {
+        width: 15px;
+        height: 15px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Settings panel */
+
+      .settings {
+        position: absolute;
+        z-index: 4;
+        top: 50%;
+        right: clamp(18px, 3vw, 48px);
+        width: 252px;
+        max-height: calc(100% - 150px - var(--safe-top) - var(--safe-bottom));
+        overflow: auto;
+        padding: 20px;
+        transform: translateY(-43%);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.16);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        scrollbar-width: thin;
+        scrollbar-color: rgba(214, 165, 116, 0.3) transparent;
+      }
+
+      .panel-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .panel-kicker {
+        margin: 0 0 6px;
+        color: var(--accent);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .panel-title {
+        margin: 0;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 650;
+        letter-spacing: -0.025em;
+      }
+
+      .panel-number {
+        color: rgba(214, 165, 116, 0.55);
+        font-family: Georgia, serif;
+        font-size: 23px;
+      }
+
+      .setting {
+        padding: 14px 0;
+        border-top: 1px solid rgba(244, 218, 192, 0.09);
+      }
+
+      .setting:first-of-type {
+        border-top: 0;
+      }
+
+      .setting-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 13px;
+        color: #e8dbce;
+        font-size: 11px;
+      }
+
+      .setting-value {
+        min-width: 38px;
+        color: var(--accent-light);
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+
+      input[type="range"] {
+        display: block;
+        width: 100%;
+        height: 4px;
+        margin: 0;
+        border-radius: 99px;
+        background: rgba(244, 218, 192, 0.15);
+        accent-color: var(--accent);
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        width: 13px;
+        height: 13px;
+        border: 2px solid #f6dfc5;
+        border-radius: 50%;
+        background: #c89460;
+        box-shadow: 0 0 0 4px rgba(214, 165, 116, 0.11);
+        appearance: none;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 10px;
+        height: 10px;
+        border: 2px solid #f6dfc5;
+        border-radius: 50%;
+        background: #c89460;
+        box-shadow: 0 0 0 4px rgba(214, 165, 116, 0.11);
+      }
+
+      .range-scale {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        color: #897969;
+        font-size: 9px;
+      }
+
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 4px;
+        padding: 13px 0;
+        border-top: 1px solid rgba(244, 218, 192, 0.09);
+      }
+
+      .toggle-copy {
+        display: grid;
+        gap: 4px;
+      }
+
+      .toggle-title {
+        color: #e8dbce;
+        font-size: 11px;
+      }
+
+      .toggle-subtitle {
+        color: #9b8978;
+        font-size: 9px;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-flex;
+        width: 36px;
+        height: 21px;
+        flex: 0 0 auto;
+      }
+
+      .switch input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+      }
+
+      .switch-track {
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgba(244, 218, 192, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        cursor: pointer;
+        transition: background 180ms ease;
+      }
+
+      .switch-track::before {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #b4a08e;
+        content: "";
+        transition:
+          transform 180ms ease,
+          background 180ms ease;
+      }
+
+      .switch input:checked + .switch-track {
+        border-color: rgba(214, 165, 116, 0.45);
+        background: rgba(214, 165, 116, 0.2);
+      }
+
+      .switch input:checked + .switch-track::before {
+        transform: translateX(15px);
+        background: var(--accent-light);
+      }
+
+      .switch input:focus-visible + .switch-track {
+        outline: 2px solid var(--accent-light);
+        outline-offset: 3px;
+      }
+
+      .panel-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .action-button {
+        display: inline-flex;
+        min-height: 38px;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 10px;
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        background: rgba(255, 255, 255, 0.035);
+        color: #e6d4c3;
+        font-size: 10px;
+        cursor: pointer;
+        transition:
+          background 180ms ease,
+          border-color 180ms ease;
+      }
+
+      .action-button:hover {
+        border-color: rgba(214, 165, 116, 0.38);
+        background: rgba(214, 165, 116, 0.1);
+      }
+
+      .action-button svg {
+        width: 14px;
+        height: 14px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .panel-footer {
+        margin: 16px 0 0;
+        color: #8f7e6e;
+        font-size: 9px;
+        line-height: 1.7;
+        text-align: center;
+      }
+
+      /* Loading and error states */
+
+      .loading {
+        position: absolute;
+        z-index: 8;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          radial-gradient(ellipse at center, rgba(86, 53, 33, 0.28), transparent 50%),
+          rgba(20, 15, 12, 0.97);
+        transition:
+          opacity 350ms ease,
+          visibility 350ms ease;
+      }
+
+      .loading.is-hidden {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .loading-content {
+        width: min(320px, 100%);
+        text-align: center;
+      }
+
+      .loading-mark {
+        display: grid;
+        width: 66px;
+        height: 66px;
+        margin: 0 auto 25px;
+        place-items: center;
+        border: 1px solid rgba(214, 165, 116, 0.3);
+        border-radius: 22px;
+        background: rgba(214, 165, 116, 0.08);
+        color: var(--accent-light);
+        font-family: Georgia, serif;
+        font-size: 34px;
+        font-style: italic;
+        animation: breathe 1.8s ease-in-out infinite;
+      }
+
+      .loading-title {
+        margin: 0;
+        font-family: Georgia, serif;
+        font-size: 25px;
+        font-weight: 400;
+        letter-spacing: -0.035em;
+      }
+
+      .loading-copy {
+        margin: 10px 0 22px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.8;
+      }
+
+      .progress-track {
+        height: 3px;
+        overflow: hidden;
+        border-radius: 99px;
+        background: rgba(244, 218, 192, 0.12);
+      }
+
+      .progress-bar {
+        width: 25%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #986c45, #f0c99f);
+        transition: width 200ms ease;
+      }
+
+      .loading-detail {
+        margin-top: 10px;
+        color: #887667;
+        font-size: 9px;
+        letter-spacing: 0.04em;
+      }
+
+      .error-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 18px;
+      }
+
+      .error-actions button {
+        min-height: 40px;
+        padding: 0 16px;
+        border: 1px solid rgba(214, 165, 116, 0.35);
+        border-radius: 12px;
+        background: rgba(214, 165, 116, 0.1);
+        color: var(--accent-light);
+        cursor: pointer;
+      }
+
+      /* Hideable controls */
+
+      .settings.is-collapsed {
+        display: none;
+      }
+
+      #settingsToggle {
+        display: none;
+      }
+
+      /* Small desktop / tablet */
+
+      @media (max-width: 1050px) {
+        .product-info {
+          top: 23%;
+          left: 32px;
+          width: min(300px, 45vw);
+          transform: none;
+        }
+
+        .product-title {
+          font-size: clamp(38px, 5.4vw, 56px);
+        }
+
+        .product-description {
+          margin-top: 13px;
+          font-size: 11px;
+        }
+
+        .product-meta {
+          margin-top: 14px;
+        }
+
+        .settings {
+          top: auto;
+          right: 22px;
+          bottom: calc(18px + var(--safe-bottom));
+          width: 238px;
+          max-height: 47%;
+          transform: none;
+          padding: 16px;
+        }
+
+        .panel-heading {
+          margin-bottom: 12px;
+        }
+
+        .setting {
+          padding: 10px 0;
+        }
+
+        .interaction-hint {
+          bottom: calc(25px + var(--safe-bottom));
+          left: 34%;
+          max-width: 38%;
+          white-space: normal;
+          line-height: 1.5;
+        }
+
+        #settingsToggle {
+          display: inline-grid;
+        }
+      }
+
+      /* Mobile */
+
+      @media (max-width: 600px) {
+        .topbar {
+          top: calc(13px + var(--safe-top));
+          right: 14px;
+          left: 14px;
+          gap: 8px;
+        }
+
+        .brand {
+          gap: 9px;
+        }
+
+        .brand-mark {
+          width: 37px;
+          height: 37px;
+          border-radius: 13px;
+          font-size: 21px;
+        }
+
+        .brand-name {
+          font-size: 11px;
+          letter-spacing: 0.12em;
+        }
+
+        .brand-subtitle {
+          font-size: 8px;
+          letter-spacing: 0.11em;
+        }
+
+        .top-actions {
+          gap: 7px;
+        }
+
+        .status-pill {
+          min-height: 31px;
+          padding: 0 9px;
+          font-size: 9px;
+        }
+
+        .icon-button {
+          width: 36px;
+          height: 36px;
+          border-radius: 12px;
+        }
+
+        .product-info {
+          top: calc(82px + var(--safe-top));
+          left: 20px;
+          width: min(245px, 68vw);
+        }
+
+        .eyebrow {
+          margin-bottom: 11px;
+          font-size: 8px;
+          letter-spacing: 0.19em;
+        }
+
+        .product-title {
+          font-size: clamp(36px, 10vw, 48px);
+        }
+
+        .product-description {
+          max-width: 220px;
+          margin-top: 11px;
+          font-size: 10px;
+          line-height: 1.65;
+        }
+
+        .product-meta {
+          gap: 6px;
+          margin-top: 11px;
+        }
+
+        .meta-chip {
+          padding: 6px 8px;
+          font-size: 8px;
+        }
+
+        .settings {
+          right: 12px;
+          bottom: calc(12px + var(--safe-bottom));
+          left: 12px;
+          width: auto;
+          max-height: min(43dvh, 310px);
+          padding: 13px 15px;
+          border-radius: 17px;
+          transform: none;
+        }
+
+        .panel-heading {
+          align-items: center;
+          margin-bottom: 8px;
+        }
+
+        .panel-kicker {
+          margin-bottom: 4px;
+          font-size: 8px;
+        }
+
+        .panel-title {
+          font-size: 12px;
+        }
+
+        .panel-number {
+          font-size: 20px;
+        }
+
+        .setting {
+          padding: 9px 0;
+        }
+
+        .setting-label {
+          margin-bottom: 10px;
+          font-size: 10px;
+        }
+
+        .range-scale {
+          margin-top: 6px;
+          font-size: 8px;
+        }
+
+        .toggle-row {
+          padding: 10px 0;
+        }
+
+        .toggle-title {
+          font-size: 10px;
+        }
+
+        .toggle-subtitle {
+          font-size: 8px;
+        }
+
+        .panel-actions {
+          margin-top: 8px;
+        }
+
+        .action-button {
+          min-height: 34px;
+          padding: 7px;
+          font-size: 9px;
+        }
+
+        .panel-footer {
+          margin-top: 9px;
+          font-size: 8px;
+        }
+
+        .interaction-hint {
+          bottom: calc(17px + var(--safe-bottom));
+          left: 20px;
+          max-width: calc(100% - 40px);
+          justify-content: flex-start;
+          gap: 8px;
+          transform: none;
+          font-size: 9px;
+        }
+
+        .hint-icon {
+          width: 28px;
+          height: 28px;
+        }
+
+        .settings:not(.is-collapsed) ~ .interaction-hint {
+          display: none;
+        }
+
+        .settings.is-collapsed {
+          display: none;
+        }
+
+        .settings.is-collapsed + .interaction-hint {
+          display: flex;
+        }
+      }
+
+      @media (max-width: 360px) {
+        .status-pill {
+          gap: 5px;
+          padding: 0 7px;
+          font-size: 8px;
+        }
+
+        .brand-subtitle {
+          letter-spacing: 0.07em;
+        }
+
+        .product-info {
+          width: 72vw;
+        }
+
+        .product-title {
+          font-size: 35px;
+        }
+
+        .product-description {
+          max-width: 195px;
+        }
+
+        .settings {
+          padding: 11px 12px;
+        }
+      }
+
+      @media (max-height: 650px) and (min-width: 601px) {
+        .topbar {
+          top: calc(12px + var(--safe-top));
+        }
+
+        .product-info {
+          top: 50%;
+        }
+
+        .product-title {
+          font-size: clamp(34px, 4vw, 50px);
+        }
+
+        .product-description {
+          margin-top: 10px;
+          line-height: 1.6;
+        }
+
+        .product-meta {
+          margin-top: 12px;
+        }
+
+        .settings {
+          max-height: calc(100% - 90px);
+          padding: 13px;
+        }
+
+        .setting {
+          padding: 8px 0;
+        }
+
+        .interaction-hint {
+          bottom: 12px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: translateY(0);
+          box-shadow: 0 0 0 rgba(214, 165, 116, 0);
+        }
+        50% {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 35px rgba(214, 165, 116, 0.08);
+        }
+      }
+    </style>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <main id="experience">
+      <div id="webgl" aria-label="Tampilan model 3D Ice Kopilogi"></div>
+
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">K</div>
+          <div class="brand-copy">
+            <span class="brand-name">KOPILOGI</span>
+            <span class="brand-subtitle">Coffee &amp; good moments</span>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <div class="status-pill" role="status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">3D EXPERIENCE</span>
+          </div>
+
+          <button
+            class="icon-button"
+            id="settingsToggle"
+            type="button"
+            aria-label="Tampilkan atau sembunyikan pengaturan"
+            aria-expanded="true"
+            title="Pengaturan"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="m19.4 15 .1.1 1.1.9-1.2 2.1-1.4-.5a8 8 0 0 1-1.7 1l-.2 1.5h-2.4l-.3-1.5a8 8 0 0 1-1.7-1l-1.4.5-1.2-2.1 1.1-.9a7 7 0 0 1 0-2l-1.1-.9 1.2-2.1 1.4.5a8 8 0 0 1 1.7-1l.3-1.5h2.4l.2 1.5a8 8 0 0 1 1.7 1l1.4-.5 1.2 2.1-1.1.9a7 7 0 0 1 0 2Z"
+                transform="translate(-2 -2) scale(1.15)"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="product-info" aria-labelledby="productTitle">
+        <p class="eyebrow">Signature collection</p>
+
+        <h1 class="product-title" id="productTitle">
+          Ice
+          <em>Kopilogi.</em>
+        </h1>
+
+        <p class="product-description">
+          Perpaduan kopi, susu, dan karakter khas Kopilogi. Kenali setiap detail produk melalui
+          pengalaman 3D yang interaktif.
+        </p>
+
+        <div class="product-meta">
+          <span class="meta-chip">Signature drink</span>
+          <span class="meta-chip">3D interactive</span>
+        </div>
+      </section>
+
+      <aside class="settings" id="settings" aria-label="Pengaturan tampilan 3D">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">Studio controls</p>
+            <h2 class="panel-title">Atur tampilan</h2>
+          </div>
+          <span class="panel-number" aria-hidden="true">03</span>
+        </div>
+
+        <div class="setting">
+          <label class="setting-label" for="exp">
+            <span>Exposure</span>
+            <output class="setting-value" id="expValue" for="exp">1.00</output>
+          </label>
+          <input id="exp" type="range" min="0.4" max="2" step="0.05" value="1" />
+          <div class="range-scale">
+            <span>Soft</span>
+            <span>Bright</span>
+          </div>
+        </div>
+
+        <div class="setting">
+          <label class="setting-label" for="env">
+            <span>Environment light</span>
+            <output class="setting-value" id="envValue" for="env">0.60</output>
+          </label>
+          <input id="env" type="range" min="0.1" max="1.5" step="0.05" value="0.6" />
+          <div class="range-scale">
+            <span>Subtle</span>
+            <span>Glossy</span>
+          </div>
+        </div>
+
+        <div class="setting">
+          <label class="setting-label" for="rim">
+            <span>Rim light</span>
+            <output class="setting-value" id="rimValue" for="rim">2.2</output>
+          </label>
+          <input id="rim" type="range" min="0" max="5" step="0.1" value="2.2" />
+          <div class="range-scale">
+            <span>Natural</span>
+            <span>Dramatic</span>
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-copy">
+            <span class="toggle-title">Rotasi otomatis</span>
+            <span class="toggle-subtitle">Putar produk perlahan</span>
+          </div>
+
+          <label class="switch">
+            <input id="autoRotate" type="checkbox" checked />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <div class="panel-actions">
+          <button class="action-button" id="resetCamera" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 11a9 9 0 1 1 2.6 6.4"></path>
+              <path d="M3 4v7h7"></path>
+            </svg>
+            Reset view
+          </button>
+
+          <button class="action-button" id="fullscreen" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"></path>
+            </svg>
+            Fullscreen
+          </button>
+        </div>
+
+        <p class="panel-footer">Geser untuk memutar · Scroll untuk zoom</p>
+      </aside>
+
+      <div class="interaction-hint" id="interactionHint">
+        <span class="hint-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M8 12V6a2 2 0 0 1 4 0v5-2a2 2 0 0 1 4 0v3-1a2 2 0 0 1 4 0v5a6 6 0 0 1-6 6h-2a6 6 0 0 1-4.5-2L4 16a2 2 0 0 1 3-2l2 2"
+            ></path>
+          </svg>
+        </span>
+        Sentuh dan geser untuk menjelajahi produk
+      </div>
+
+      <section class="loading" id="loading" aria-live="polite" aria-busy="true">
+        <div class="loading-content">
+          <div class="loading-mark" aria-hidden="true">K</div>
+          <h2 class="loading-title" id="loadingTitle">Meracik pengalaman.</h2>
+          <p class="loading-copy" id="loadingCopy">
+            Menyiapkan visualisasi Ice Kopilogi untukmu...
+          </p>
+
+          <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+
+          <p class="loading-detail" id="loadingDetail">Menginisialisasi studio 3D</p>
+
+          <div class="error-actions" id="errorActions" hidden>
+            <button id="retryLoad" type="button">Coba muat ulang</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+      import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+      const $ = (id) => document.getElementById(id);
+
+      const GLB_URL = new URLSearchParams(location.search).get("glb") || "/ice-kopilogi.glb";
+
+      const experience = $("experience");
+      const viewport = $("webgl");
+      const loading = $("loading");
+      const loadingTitle = $("loadingTitle");
+      const loadingCopy = $("loadingCopy");
+      const loadingDetail = $("loadingDetail");
+      const progressBar = $("progressBar");
+      const errorActions = $("errorActions");
+      const statusText = $("statusText");
+      const statusDot = $("statusDot");
+      const settings = $("settings");
+      const settingsToggle = $("settingsToggle");
+
+      const sliderExposure = $("exp");
+      const sliderEnvironment = $("env");
+      const sliderRim = $("rim");
+      const autoRotateToggle = $("autoRotate");
+
+      let renderer;
+      let scene;
+      let camera;
+      let controls;
+      let model = null;
+      let modelRoot = null;
+      let keyLight;
+      let rimLight;
+      let pmrem;
+      let environmentTarget;
+      let animationFrameActive = false;
+      let loadGeneration = 0;
+      let disposed = false;
+      let initialCameraPosition = null;
+      let initialTarget = null;
+      let initialZoom = 1;
+      let resizeObserver = null;
+
+      const materials = new Set();
+      const defaultSettings = {
+        exposure: 1,
+        environment: 0.6,
+        rim: 2.2,
+        autoRotate: true,
+      };
+
+      function setStatus(text, color = "ready") {
+        statusText.textContent = text;
+
+        const colors = {
+          ready: "#a7c5a0",
+          loading: "#d6a574",
+          error: "#e5a09a",
+        };
+
+        statusDot.style.background = colors[color] || colors.ready;
+        statusDot.style.boxShadow =
+          color === "error"
+            ? "0 0 10px rgba(229, 160, 154, .45)"
+            : `0 0 10px ${colors[color] || colors.ready}55`;
+      }
+
+      function setLoadingProgress(value, detail) {
+        const percentage = Math.max(0, Math.min(100, value));
+        progressBar.style.width = `${percentage}%`;
+
+        if (detail) {
+          loadingDetail.textContent = detail;
+        }
+      }
+
+      function showLoading(title, copy, detail) {
+        loadingTitle.textContent = title;
+        loadingCopy.textContent = copy;
+        loadingDetail.textContent = detail;
+        errorActions.hidden = true;
+        loading.setAttribute("aria-busy", "true");
+        loading.classList.remove("is-hidden");
+      }
+
+      function hideLoading() {
+        loading.setAttribute("aria-busy", "false");
+        loading.classList.add("is-hidden");
+      }
+
+      function showError(message) {
+        loadingTitle.textContent = "Belum bisa dimuat.";
+        loadingCopy.textContent = message;
+        loadingDetail.textContent = "Pastikan koneksi internet dan file model tersedia.";
+        progressBar.style.width = "100%";
+        progressBar.style.background = "var(--danger)";
+        errorActions.hidden = false;
+        loading.setAttribute("aria-busy", "false");
+        loading.classList.remove("is-hidden");
+        setStatus("LOAD ERROR", "error");
+      }
+
+      function updateOutput(input, output, decimals = 2) {
+        $(output).textContent = Number(input.value).toFixed(decimals);
+      }
+
+      function applyMaterialSettings() {
+        const intensity = Number(sliderEnvironment.value);
+
+        for (const material of materials) {
+          if ("envMapIntensity" in material) {
+            material.envMapIntensity = intensity;
+          }
+        }
+      }
+
+      function disposeObject(object) {
+        if (!object) return;
+
+        object.traverse((child) => {
+          if (!child.isMesh) return;
+
+          child.geometry?.dispose();
+
+          const list = Array.isArray(child.material) ? child.material : [child.material];
+
+          for (const material of list) {
+            material?.dispose();
+          }
+        });
+      }
+
+      function removeCurrentModel() {
+        if (modelRoot && scene) {
+          scene.remove(modelRoot);
+          disposeObject(modelRoot);
+        }
+
+        model = null;
+        modelRoot = null;
+        materials.clear();
+      }
+
+      function createRenderer() {
+        renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+        });
+
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = defaultSettings.exposure;
+        renderer.setClearColor(0x000000, 0);
+        renderer.domElement.setAttribute("aria-label", "Model 3D Ice Kopilogi");
+        renderer.domElement.tabIndex = 0;
+        viewport.appendChild(renderer.domElement);
+
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera(32, 1, 0.01, 1000);
+        camera.position.set(0, 1, 5);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.065;
+        controls.enablePan = false;
+        controls.enableZoom = true;
+        controls.zoomSpeed = 0.8;
+        controls.rotateSpeed = 0.65;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.8;
+        controls.minPolarAngle = 0.2;
+        controls.maxPolarAngle = Math.PI - 0.2;
+        controls.minDistance = 0.1;
+        controls.maxDistance = 1000;
+
+        pmrem = new THREE.PMREMGenerator(renderer);
+        environmentTarget = pmrem.fromScene(new RoomEnvironment(), 0.04);
+        scene.environment = environmentTarget.texture;
+
+        keyLight = new THREE.DirectionalLight(0xffead5, 2.1);
+        keyLight.position.set(3, 5, 5);
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight(0xd2a77f, 1.0);
+        fillLight.position.set(-4, 1, 3);
+        scene.add(fillLight);
+
+        rimLight = new THREE.DirectionalLight(0xffc58d, defaultSettings.rim);
+        rimLight.position.set(-2, 3, -4);
+        scene.add(rimLight);
+
+        const topLight = new THREE.PointLight(0xffdfbd, 22, 30);
+        topLight.position.set(0, 5, 1);
+        scene.add(topLight);
+
+        const floorGlow = new THREE.PointLight(0x794a2d, 10, 25);
+        floorGlow.position.set(0, -2, 2);
+        scene.add(floorGlow);
+
+        resizeObserver = new ResizeObserver(resizeRenderer);
+        resizeObserver.observe(viewport);
+        resizeRenderer();
+      }
+
+      function resizeRenderer() {
+        if (!renderer || !camera) return;
+
+        const width = Math.max(1, viewport.clientWidth);
+        const height = Math.max(1, viewport.clientHeight);
+
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      }
+
+      function frameModel(object) {
+        const box = new THREE.Box3().setFromObject(object);
+
+        if (box.isEmpty()) {
+          throw new Error("Model 3D tidak memiliki geometri yang bisa ditampilkan.");
+        }
+
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        const maxDimension = Math.max(size.x, size.y, size.z);
+
+        if (!Number.isFinite(maxDimension) || maxDimension <= 0) {
+          throw new Error("Ukuran model 3D tidak valid.");
+        }
+
+        // Normalisasi ukuran model untuk memudahkan pengaturan kamera.
+        const normalizationScale = 2.4 / maxDimension;
+        object.scale.multiplyScalar(normalizationScale);
+        object.updateMatrixWorld(true);
+
+        const normalizedBox = new THREE.Box3().setFromObject(object);
+        const normalizedCenter = normalizedBox.getCenter(new THREE.Vector3());
+
+        // Pusatkan model di koordinat dunia.
+        object.position.sub(normalizedCenter);
+        object.updateMatrixWorld(true);
+
+        const normalizedSize = normalizedBox.getSize(new THREE.Vector3());
+        const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+        const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
+
+        const distanceForHeight = normalizedSize.y / 2 / Math.tan(verticalFov / 2);
+        const distanceForWidth = normalizedSize.x / 2 / Math.tan(horizontalFov / 2);
+
+        const distance =
+          Math.max(distanceForHeight, distanceForWidth) * 1.6 + normalizedSize.z * 0.5;
+
+        const targetY = normalizedSize.y * 0.02;
+
+        camera.near = Math.max(0.001, distance / 1000);
+        camera.far = Math.max(100, distance * 100);
+        camera.position.set(distance * 0.08, targetY + normalizedSize.y * 0.12, distance);
+        camera.lookAt(0, targetY, 0);
+        camera.updateProjectionMatrix();
+
+        controls.target.set(0, targetY, 0);
+        controls.minDistance = Math.max(0.1, distance * 0.48);
+        controls.maxDistance = distance * 3.0;
+        controls.update();
+
+        initialCameraPosition = camera.position.clone();
+        initialTarget = controls.target.clone();
+        initialZoom = camera.zoom;
+
+        return { center, size, distance };
+      }
+
+      function configureModel(object) {
+        materials.clear();
+
+        object.traverse((child) => {
+          if (!child.isMesh) return;
+
+          child.frustumCulled = false;
+
+          const materialList = Array.isArray(child.material) ? child.material : [child.material];
+
+          for (const material of materialList) {
+            if (!material) continue;
+
+            materials.add(material);
+
+            if ("envMapIntensity" in material) {
+              material.envMapIntensity = Number(sliderEnvironment.value);
+            }
+          }
+
+          // Pertahankan material dan transparansi asli model GLB.
+          // renderOrder tidak dipaksakan agar transparansi tetap wajar.
+        });
+
+        applyMaterialSettings();
+      }
+
+      function resetCamera() {
+        if (!initialCameraPosition || !initialTarget || !camera || !controls) {
+          return;
+        }
+
+        camera.position.copy(initialCameraPosition);
+        camera.zoom = initialZoom;
+        camera.updateProjectionMatrix();
+
+        controls.target.copy(initialTarget);
+        controls.update();
+      }
+
+      function loadModel() {
+        if (disposed) return;
+
+        const generation = ++loadGeneration;
+
+        removeCurrentModel();
+        progressBar.style.background = "linear-gradient(90deg, #986c45, #f0c99f)";
+
+        showLoading(
+          "Meracik pengalaman.",
+          "Menyiapkan visualisasi Ice Kopilogi untukmu...",
+          "Menghubungkan model 3D",
+        );
+
+        setLoadingProgress(12);
+        setStatus("LOADING MODEL", "loading");
+
+        const loader = new GLTFLoader();
+
+        loader.load(
+          GLB_URL,
+          (gltf) => {
+            if (disposed || generation !== loadGeneration) {
+              disposeObject(gltf.scene);
+              return;
+            }
+
+            try {
+              model = gltf.scene;
+              modelRoot = model;
+              configureModel(model);
+              scene.add(model);
+              frameModel(model);
+
+              setLoadingProgress(100, "Studio 3D siap");
+              setStatus("3D EXPERIENCE", "ready");
+
+              console.info("Model 3D berhasil dimuat:", GLB_URL);
+              console.info(
+                "Objek model:",
+                model.children.map((child) => child.name),
+              );
+
+              // Beri kesempatan progress 100% terlihat sebelum transisi.
+              requestAnimationFrame(() => {
+                if (generation === loadGeneration && !disposed) {
+                  hideLoading();
+                }
+              });
+            } catch (error) {
+              console.error("Gagal menyiapkan model:", error);
+              scene.remove(model);
+              disposeObject(model);
+              model = null;
+              modelRoot = null;
+
+              showError("Model berhasil diunduh, tetapi tidak dapat disiapkan untuk ditampilkan.");
+            }
+          },
+          (progress) => {
+            if (disposed || generation !== loadGeneration) return;
+
+            if (progress.lengthComputable && progress.total > 0) {
+              const percent = (progress.loaded / progress.total) * 100;
+              setLoadingProgress(12 + percent * 0.8, `Memuat model · ${Math.round(percent)}%`);
+            } else {
+              setLoadingProgress(
+                Math.min(85, Number.parseFloat(progressBar.style.width) + 2),
+                "Mengunduh aset 3D...",
+              );
+            }
+          },
+          (error) => {
+            if (disposed || generation !== loadGeneration) return;
+
+            console.error("Gagal memuat GLB:", error);
+
+            showError(
+              `Model tidak berhasil dimuat. Pastikan file ${GLB_URL} tersedia dan dapat diakses.`,
+            );
+          },
+        );
+      }
+
+      function applyDefaultSettings() {
+        sliderExposure.value = String(defaultSettings.exposure);
+        sliderEnvironment.value = String(defaultSettings.environment);
+        sliderRim.value = String(defaultSettings.rim);
+        autoRotateToggle.checked = defaultSettings.autoRotate;
+
+        renderer.toneMappingExposure = defaultSettings.exposure;
+        rimLight.intensity = defaultSettings.rim;
+        controls.autoRotate = defaultSettings.autoRotate;
+
+        updateOutput(sliderExposure, "expValue");
+        updateOutput(sliderEnvironment, "envValue");
+        updateOutput(sliderRim, "rimValue", 1);
+        applyMaterialSettings();
+      }
+
+      sliderExposure.addEventListener("input", () => {
+        renderer.toneMappingExposure = Number(sliderExposure.value);
+        updateOutput(sliderExposure, "expValue");
+      });
+
+      sliderEnvironment.addEventListener("input", () => {
+        applyMaterialSettings();
+        updateOutput(sliderEnvironment, "envValue");
+      });
+
+      sliderRim.addEventListener("input", () => {
+        rimLight.intensity = Number(sliderRim.value);
+        updateOutput(sliderRim, "rimValue", 1);
+      });
+
+      autoRotateToggle.addEventListener("change", () => {
+        controls.autoRotate = autoRotateToggle.checked;
+      });
+
+      $("resetCamera").addEventListener("click", resetCamera);
+
+      $("fullscreen").addEventListener("click", async () => {
+        try {
+          if (!document.fullscreenElement) {
+            await experience.requestFullscreen();
+          } else {
+            await document.exitFullscreen();
+          }
+        } catch (error) {
+          console.warn("Fullscreen tidak tersedia:", error);
+        }
+      });
+
+      settingsToggle.addEventListener("click", () => {
+        const collapsed = settings.classList.toggle("is-collapsed");
+        settingsToggle.setAttribute("aria-expanded", String(!collapsed));
+        settingsToggle.setAttribute(
+          "aria-label",
+          collapsed ? "Tampilkan pengaturan" : "Sembunyikan pengaturan",
+        );
+      });
+
+      $("retryLoad").addEventListener("click", loadModel);
+
+      // Mengurangi animasi ketika tab tidak terlihat.
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          controls.autoRotate = false;
+        } else {
+          controls.autoRotate = autoRotateToggle.checked && !disposed;
+        }
+      });
+
+      function animate() {
+        if (disposed || !renderer) return;
+
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      function start() {
+        try {
+          createRenderer();
+          applyDefaultSettings();
+          loadModel();
+
+          if (!animationFrameActive) {
+            animationFrameActive = true;
+            renderer.setAnimationLoop(animate);
+          }
+        } catch (error) {
+          console.error("Inisialisasi viewer gagal:", error);
+
+          showError(
+            "Browser tidak dapat menginisialisasi tampilan 3D. Coba gunakan browser modern dengan dukungan WebGL.",
+          );
+        }
+      }
+
+      function cleanup() {
+        if (disposed) return;
+
+        disposed = true;
+        loadGeneration++;
+
+        if (renderer) {
+          renderer.setAnimationLoop(null);
+        }
+
+        resizeObserver?.disconnect();
+        controls?.dispose();
+        removeCurrentModel();
+
+        if (scene) {
+          scene.environment = null;
+        }
+
+        environmentTarget?.dispose();
+        pmrem?.dispose();
+        renderer?.dispose();
+      }
+
+      window.addEventListener("pagehide", cleanup, { once: true });
+
+      // Inisialisasi setelah DOM dan kontrol tersedia.
+      start();
+    </script>
+  </body>
+</html>
